@@ -1,0 +1,8 @@
+# USTAD MONITOR - e-posta ayarlari
+# Doldur ve kaydet. Bu dosya bilgisayarinda kalir, panele yuklenmez.
+gonderen = senin@gmail.com
+sifre = uygulama-sifresi   # Gmail: Hesap > Guvenlik > 2 Adimli Dogrulama > Uygulama sifreleri
+alici = senin@gmail.com
+sunucu = smtp.gmail.com
+port = 465
+konu = USTAD Dunya Monitoru - Gunluk Bulten

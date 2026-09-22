@@ -1,0 +1,8 @@
+USTAD DUNYA MONITORU - SITEYE YUKLEME
+=====================================
+2) ustadkenankuzucu.com.tr altinda "monitor" adinda klasor ac
+3) bu klasordeki TUM dosyalari oraya yukle
+4) Adres: https://ustadkenankuzucu.com.tr/monitor/
+
+NOT: 3D kure icin internet gerekir (globe.gl CDN).
+NOT: Anahtarlar ve kisisel notlar bu kopyada YOK (temiz surum).

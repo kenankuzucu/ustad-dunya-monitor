@@ -1,0 +1,63 @@
+================================================================
+  USTAD DUNYA MONITORU - TELEFON ICIN APK KILAVUZU
+  (Üstad Kenan Kuzucu · kisisel kullanim)
+================================================================
+
+Amac: Paneli telefonunda kendi uygulaman olarak kullanmak
+      (simge, tam ekran, internetsiz acilis + veri gelince guncelleme).
+
+YONTEM 1 - EN KOLAY (kendi AndroidBuild projelerinden biriyle)
+--------------------------------------------------------------
+Sende zaten WebView tabanli APK projeleri var
+(AndroidBuild\ altindaki KALI REHBERIM / USTAD PIYASA / OYNAtici vb.)
+Adimlar:
+  1) O projelerden birinin klasorunu kopyala: AndroidBuild\MONITOR-APP
+  2) app\src\main\assets\ klasorune panelin dosyalarini kopyala
+     (index.html, tum .js dosyalari, foto\ klasoru)
+  3) MainActivity'de yuklenen adresi degistir:
+     webView.loadUrl("file:///android_asset/index.html");
+  4) Paylasilan ayarlar:
+     webView.getSettings().setJavaScriptEnabled(true);
+     webView.getSettings().setDomStorageEnabled(true);      // localStorage sart
+     webView.getSettings().setAllowFileAccess(true);
+     webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+  5) build-*.sh / gradlew assembleDebug ile derle
+  6) cikti: app\build\outputs\apk\debug\app-debug.apk
+     (Kurarken Play Protect'i kapat - senin bildigin adim)
+
+YONTEM 2 - CAPACITOR (daha modern, Node ile)
+--------------------------------------------
+  npm install -g @capacitor/cli
+  mkdir monitor-app && cd monitor-app
+  npx cap init "Ustad Monitor" "com.ustad.monitor" --web-dir=www
+  mkdir www  (panel dosyalarini icine kopyala)
+  npm install @capacitor/android
+  npx cap add android
+  npx cap sync
+  cd android && gradlew assembleDebug
+  APK: android\app\build\outputs\apk\debug\app-debug.apk
+
+YONTEM 3 - TARAYICIDAN KISAYOL (APK'siz)
+----------------------------------------
+  Telefonda Chrome > panele gir (yerel sunucu adresi veya site adresi)
+  Menu > "Ana ekrana ekle"  ->  uygulama gibi calisir, simge olusur.
+  Bu yontem APK'dan hizli; bildirim izni de verilebilir.
+
+DIKKAT EDILECEK NOKTALAR
+------------------------
+  * Panel localStorage kullanir: setDomStorageEnabled(true) olmazsa
+    ayarlar/tema/defter kaydolmaz.
+  * 3D kure icin WebView'de WebGL gerekir; eski Android surumlerinde
+    yavas olabilir. AYARLAR > ⚙ KALITE > DUSUK modunu sec.
+  * file:// modunda mikrofon ve Hue calismaz (tarayici kurali).
+    Telefonda sesli komut istiyorsan YONTEM 3 + yerel sunucu kullan.
+  * Panel dosyalarini telefona kopyalarken foto\ klasorunu unutma.
+
+HANGI YONTEMI SECMELI
+---------------------
+  En hizli sonuc  : YONTEM 3 (5 dakika, APK yok)
+  En saglam       : YONTEM 1 (kendi projelerinin aynisi)
+  En guncel       : YONTEM 2 (yeni surumler icin)
+
+Bu dosya bir kilavuzdur; otomatik APK uretmez (Android SDK gerekir).
+Takildigin adimi soyle, o adimi birlikte yapariz.

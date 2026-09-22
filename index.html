@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ÜSTAD DÜNYA MONİTÖRÜ — Canlı Küresel Durum</title>
+<link rel="icon" type="image/png" href="foto/favicon.png">
+<link rel="shortcut icon" href="foto/favicon.ico">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --arka:#000; --arka2:#040a06; --kart:#0a1410; --cizgi:rgba(34,197,94,.30);
+  --yazi:#d9f7dd; --yazi2:#79b98b; --ana:#22c55e; --ana2:#4ade80;
+  --vurgu:#4ade80; --hata:#ff3b3b; --kod:#050b07; --glitch-c:#0ff; --glitch-m:#f0f;
+  --zemin1:#06200f; --zemin2:#000; --zemin3:#000; --tarama:rgba(34,197,94,.03);
+  --bar:rgba(0,0,0,.88); --saydam:rgba(0,0,0,.55);
+}
+body[data-renk="altin"]{ --ana:#d4af37; --ana2:#f0c96a; --cizgi:rgba(212,175,55,.30); --yazi2:#b8a577;
+  --yazi:#f7efd9; --kart:#141005; --kod:#0b0903; --zemin1:#241b04; --tarama:rgba(212,175,55,.035); }
+body[data-renk="gece"]{ --ana:#38bdf8; --ana2:#7dd3fc; --cizgi:rgba(56,189,248,.30); --yazi2:#8fb6cc;
+  --yazi:#dcefff; --kart:#061018; --kod:#030a10; --zemin1:#04202f; --tarama:rgba(56,189,248,.03); }
+/* ==== YENİ TEMALAR ==== */
+body[data-renk="hacker"]{ --ana:#00ff41; --ana2:#7bffa1; --cizgi:rgba(0,255,65,.34); --yazi2:#4fd97a;
+  --yazi:#c9ffd8; --kart:#00140a; --kod:#000a04; --zemin1:#003a12; --tarama:rgba(0,255,65,.055);
+  --glitch-c:#00ff41; --glitch-m:#00cc33; --vurgu:#7bffa1; }
+body[data-renk="istihbarat"]{ --ana:#c9b458; --ana2:#ffd479; --cizgi:rgba(201,180,88,.34); --yazi2:#a8a179;
+  --yazi:#f0ecd4; --kart:#12130b; --kod:#0a0b06; --zemin1:#1e2408; --tarama:rgba(201,180,88,.04);
+  --hata:#ff8c1a; --vurgu:#ffd479; --glitch-c:#c9b458; --glitch-m:#8a7a2e; }
+body[data-renk="alarm"]{ --ana:#ff2d2d; --ana2:#ff8080; --cizgi:rgba(255,45,45,.34); --yazi2:#c98b8b;
+  --yazi:#ffe3e3; --kart:#180505; --kod:#0d0202; --zemin1:#3d0505; --tarama:rgba(255,45,45,.05);
+  --vurgu:#ff8080; }
+body[data-renk="amber"]{ --ana:#ffb000; --ana2:#ffd166; --cizgi:rgba(255,176,0,.32); --yazi2:#c9a05a;
+  --yazi:#ffeccc; --kart:#150f02; --kod:#0b0701; --zemin1:#2e1e00; --tarama:rgba(255,176,0,.045); }
+body[data-renk="siber"]{ --ana:#22d3ee; --ana2:#67e8f9; --cizgi:rgba(34,211,238,.32); --yazi2:#7fb8c4;
+  --yazi:#dbfaff; --kart:#04141a; --kod:#020c10; --zemin1:#03262e; --tarama:rgba(34,211,238,.04); }
+body[data-renk="mor"]{ --ana:#a855f7; --ana2:#c98bff; --cizgi:rgba(168,85,247,.32); --yazi2:#b294cc;
+  --yazi:#f0e2ff; --kart:#100418; --kod:#080210; --zemin1:#26093c; --tarama:rgba(168,85,247,.045); }
+body[data-renk="matbaa"]{ --ana:#e5e7eb; --ana2:#ffffff; --cizgi:rgba(229,231,235,.28); --yazi2:#9ca3af;
+  --yazi:#f8fafc; --kart:#0e0e0f; --kod:#08080a; --zemin1:#20242a; --tarama:rgba(255,255,255,.03); }
+/* ==== AÇIK RENK TEMALARI (beyaz değil, yumuşak tonlar) ==== */
+body[data-renk="acik"]{ --ana:#15803d; --ana2:#1f9d55; --cizgi:rgba(21,128,61,.28); --yazi2:#5c7a68;
+  --yazi:#12251a; --kart:#f6faf7; --kod:#eef4f0; --zemin1:#dcebe2; --zemin2:#f4f8f5; --zemin3:#eef3f0;
+  --tarama:rgba(21,128,61,.035); --bar:rgba(246,250,247,.92); --saydam:rgba(246,250,247,.88);
+  --vurgu:#15803d; --glitch-c:#0e7490; --glitch-m:#a855f7; }
+body[data-renk="kagit"]{ --ana:#b8862b; --ana2:#cf9f3f; --cizgi:rgba(184,134,43,.30); --yazi2:#7d6a4e;
+  --yazi:#302619; --kart:#fdfaf1; --kod:#f6f0e0; --zemin1:#efe4cd; --zemin2:#faf6ec; --zemin3:#f6f1e6;
+  --tarama:rgba(184,134,43,.04); --bar:rgba(253,250,241,.92); --saydam:rgba(253,250,241,.88);
+  --glitch-c:#0f766e; --glitch-m:#9a3412; }
+body[data-renk="buz"]{ --ana:#0e7490; --ana2:#0891b2; --cizgi:rgba(14,116,144,.28); --yazi2:#5b7c8c;
+  --yazi:#122b38; --kart:#f7fbfe; --kod:#eef6fb; --zemin1:#d7e9f5; --zemin2:#f3f9fd; --zemin3:#edf5fa;
+  --tarama:rgba(14,116,144,.035); --bar:rgba(247,251,254,.92); --saydam:rgba(247,251,254,.88);
+  --vurgu:#0e7490; --glitch-c:#0891b2; --glitch-m:#6366f1; }
+body[data-renk="lavanta"]{ --ana:#7c3aed; --ana2:#9061f9; --cizgi:rgba(124,58,237,.26); --yazi2:#6b6187;
+  --yazi:#221a35; --kart:#faf7ff; --kod:#f2ecfe; --zemin1:#e4daf8; --zemin2:#f7f4fd; --zemin3:#f2eefb;
+  --tarama:rgba(124,58,237,.03); --bar:rgba(250,247,255,.92); --saydam:rgba(250,247,255,.88);
+  --vurgu:#7c3aed; --glitch-c:#0891b2; --glitch-m:#db2777; }
+/* açık temalarda küre/kart gölgeleri yumuşasın */
+body[data-renk="acik"] .madalyon, body[data-renk="kagit"] .madalyon, body[data-renk="buz"] .madalyon, body[data-renk="lavanta"] .madalyon{
+  box-shadow:0 0 0 3px rgba(255,255,255,.85), 0 2px 18px rgba(0,0,0,.28), 0 0 22px var(--ana); }
+body[data-renk="acik"] .madalyon::after, body[data-renk="kagit"] .madalyon::after,
+body[data-renk="buz"] .madalyon::after, body[data-renk="lavanta"] .madalyon::after{ border-color:rgba(0,0,0,.18); }
+body[data-renk="acik"] .kimlik, body[data-renk="kagit"] .kimlik, body[data-renk="buz"] .kimlik, body[data-renk="lavanta"] .kimlik{
+  box-shadow:0 4px 16px rgba(0,0,0,.22); }
+body[data-renk="acik"] .glitch, body[data-renk="kagit"] .glitch, body[data-renk="buz"] .glitch, body[data-renk="lavanta"] .glitch{
+  text-shadow:1px 0 var(--glitch-c), -1px 0 var(--glitch-m), 0 0 14px rgba(0,0,0,.12); }
+/* ==== TAM DONANIMLI HACKER TEMALARI ==== */
+body[data-renk="matrix"]{ --ana:#00ff5f; --ana2:#8dffb0; --cizgi:rgba(0,255,95,.38); --yazi2:#3fbf6a;
+  --yazi:#b8ffcd; --kart:#00170a; --kod:#000c05; --zemin1:#003d14; --zemin2:#000; --zemin3:#000;
+  --tarama:rgba(0,255,95,.07); --glitch-c:#00ff5f; --glitch-m:#008f35; --vurgu:#8dffb0; --hata:#ff3b5f; }
+body[data-renk="neon"]{ --ana:#ff2fb9; --ana2:#7af9ff; --cizgi:rgba(255,47,185,.34); --yazi2:#c07fd0;
+  --yazi:#ffe7fb; --kart:#160419; --kod:#0d020f; --zemin1:#3a0b3f; --tarama:rgba(255,47,185,.05);
+  --vurgu:#7af9ff; --glitch-c:#7af9ff; --glitch-m:#ff2fb9; }
+body[data-renk="col"]{ --ana:#d9a55a; --ana2:#f0c98a; --cizgi:rgba(217,165,90,.32); --yazi2:#b09070;
+  --yazi:#f7e8d2; --kart:#150f07; --kod:#0c0804; --zemin1:#2b1d0c; --tarama:rgba(217,165,90,.04); }
+body[data-renk="orman"]{ --ana:#3fbf5f; --ana2:#8fe0a5; --cizgi:rgba(63,191,95,.32); --yazi2:#8aa88e;
+  --yazi:#e0f3e4; --kart:#061309; --kod:#030b05; --zemin1:#0b2a14; --tarama:rgba(63,191,95,.04); }
+body[data-renk="terminal"]{ --ana:#ff9f1a; --ana2:#5fd3ff; --cizgi:rgba(255,159,26,.32); --yazi2:#b98f4a;
+  --yazi:#ffe9c9; --kart:#120d02; --kod:#0a0601; --zemin1:#2a1a00; --tarama:rgba(255,159,26,.045);
+  --vurgu:#5fd3ff; --glitch-c:#5fd3ff; --glitch-m:#ff9f1a; }
+/* matrix yağmuru katmanı + CRT efektleri */
+#matris{ position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0; transition:opacity .5s linear; }
+body.yagmur #matris{ opacity:.55; }
+body.crt::before{ content:''; position:fixed; inset:0; pointer-events:none; z-index:9997;
+  background:radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.6) 100%); }
+body.crt::after{ animation:crtTitrek .14s steps(2) infinite; }
+@keyframes crtTitrek{ 0%{opacity:.94} 50%{opacity:1} 100%{opacity:.9} }
+body.crt .glitch{ animation:glitchKay 4.2s infinite; }
+@keyframes glitchKay{
+  0%,90%,100%{ text-shadow:2px 0 var(--glitch-c), -2px 0 var(--glitch-m), 0 0 22px var(--ana); transform:none; }
+  92%{ text-shadow:-4px 0 var(--glitch-c), 4px 0 var(--glitch-m); transform:translateX(1.5px); }
+  94%{ text-shadow:4px 1px var(--glitch-c), -4px -1px var(--glitch-m); transform:translateX(-1.5px); }
+  96%{ text-shadow:-2px -2px var(--glitch-c), 2px 2px var(--glitch-m); transform:none; }
+}
+.renkBar{ flex-wrap:wrap; max-width:640px; }
+.renkBtn.yagmurAcik{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 8px var(--ana); }
+/* katman paneli: mod setleri, arama, yaş/yenile */
+.modSet{ display:flex; flex-wrap:wrap; gap:4px; padding:8px 8px 4px; }
+.modSetBtn{ background:transparent; border:1px solid var(--cizgi); border-radius:3px; padding:3px 7px; cursor:pointer;
+  font-family:inherit; font-size:9.5px; letter-spacing:.5px; }
+.modSetBtn:hover{ box-shadow:0 0 8px currentColor; }
+.katArama{ width:calc(100% - 16px); margin:4px 8px 2px; background:var(--kod); color:var(--yazi); border:1px solid var(--cizgi);
+  border-radius:3px; padding:5px 7px; font-family:inherit; font-size:10.5px; }
+.katAramaBilgi{ color:var(--yazi2); font-size:9px; padding:0 8px 4px; min-height:11px; }
+.katSat{ position:relative; }
+.katYas{ color:var(--yazi2); font-size:8.5px; margin-left:auto; white-space:nowrap; opacity:.8; }
+.katYenile{ background:transparent; color:var(--ana2); border:1px solid var(--cizgi); border-radius:2px; cursor:pointer;
+  font-family:inherit; font-size:9px; padding:1px 4px; margin-left:4px; }
+.katYenile:hover{ border-color:var(--ana); box-shadow:0 0 6px var(--ana); }
+.katSat > span:first-of-type{ display:flex; align-items:center; gap:6px; flex:1 1 auto; min-width:0; }
+.ekAraclar{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 0 8px; }
+.dokuBtn{ background:transparent; color:var(--yazi2); border:1px solid var(--cizgi); border-radius:3px; padding:3px 8px;
+  cursor:pointer; font-family:inherit; font-size:9.5px; letter-spacing:.5px; }
+.dokuBtn.aktif{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 8px var(--ana); }
+.zamanKaydirici{ width:150px; accent-color:var(--ana); }
+.alarmSerit{ }
+.kabloBtnS{ position:absolute; bottom:8px; right:190px; z-index:600; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{ background:var(--zemin3);
+  color:var(--yazi); font-family:"Cascadia Code","Consolas","Courier New",monospace; min-height:100vh; }
+body::before{ content:''; position:fixed; inset:0; z-index:-2; pointer-events:none; transition:background .35s linear;
+  background:radial-gradient(1200px 560px at 50% -130px, var(--zemin1) 0%, var(--zemin2) 62%); }
+body::after{ content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:repeating-linear-gradient(0deg, transparent 0 2px, var(--tarama) 2px 4px); }
+.ustBar{ position:sticky; top:0; z-index:1000; display:flex; align-items:center; gap:14px; padding:10px 18px;
+  background:var(--bar); backdrop-filter:blur(8px); border-bottom:1px solid var(--cizgi); flex-wrap:wrap; }
+.marka{ display:flex; align-items:center; gap:8px; }
+.markaAd{ color:var(--ana2); font-size:16px; font-weight:700; letter-spacing:1px; }
+.markaAd .ustad{ color:var(--yazi); }
+.betaGlitch{ font-size:7px; letter-spacing:.2em; color:var(--ana2); border:1px solid var(--cizgi); padding:2px 4px; }
+.ustNav{ display:flex; gap:12px; flex-wrap:wrap; }
+.ustNav a{ color:var(--yazi2); font-size:11px; letter-spacing:1px; cursor:pointer; text-decoration:none; }
+.ustNav a:hover, .ustNav a.aktif{ color:var(--ana2); text-shadow:0 0 8px var(--ana); }
+.sag{ margin-left:auto; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.canli{ display:inline-flex; align-items:center; color:var(--hata); border:1px solid var(--hata); padding:2px 8px;
+  font-size:10px; letter-spacing:2px; border-radius:2px; box-shadow:0 0 10px rgba(255,59,59,.35); }
+.canliNokta{ width:7px; height:7px; border-radius:50%; background:var(--hata); margin-right:6px;
+  animation:pulse 1.2s infinite; box-shadow:0 0 8px var(--hata); }
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.25} }
+.renkBar{ display:flex; gap:6px; align-items:center; }
+.renkBar .etiket{ color:var(--yazi2); font-size:9px; letter-spacing:1px; }
+.renkBtn{ background:transparent; color:var(--yazi2); border:1px solid var(--cizgi); padding:3px 8px; cursor:pointer;
+  font-family:inherit; font-size:9px; border-radius:2px; letter-spacing:1px; }
+.renkBtn.aktif{ color:var(--ana2); border-color:var(--ana); }
+.baslikAlan{ text-align:center; padding:30px 16px 6px; }
+.glitch{ margin:6px 0 2px; color:var(--ana2); font-size:26px; letter-spacing:3px; font-weight:700;
+  text-shadow:2px 0 var(--glitch-c), -2px 0 var(--glitch-m), 0 0 22px var(--ana); }
+.altBaslik{ color:var(--yazi2); font-size:11px; margin:0; letter-spacing:3px; }
+.durumCubugu{ margin:10px auto 0; color:var(--yazi2); font-size:10px; letter-spacing:1px; }
+.durumCubugu .yesil{ color:var(--ana2); }
+#icerik{ max-width:100%; margin:0 auto 40px; padding:0 16px; }
+.panelBaslik{ color:var(--ana2); font-size:15px; letter-spacing:1px; margin:8px 0 12px; text-shadow:0 0 10px rgba(34,197,94,.35); }
+.durum{ margin:10px 0 4px; color:var(--ana2); font-size:11px; min-height:15px; letter-spacing:1px; }
+.sonuc{ margin-top:8px; }
+.uyari{ margin-top:14px; padding:10px 12px; background:rgba(34,197,94,.05); border:1px solid var(--cizgi);
+  border-left:3px solid var(--ana); color:var(--yazi2); font-size:12px; line-height:1.5; border-radius:3px; }
+.soluk{ color:var(--yazi2); }
+.hata{ color:var(--hata); }
+a{ color:var(--ana2); }
+/* HARITA */
+#haritaKutu{ height:520px; border:1px solid var(--cizgi); border-radius:4px; overflow:hidden; position:relative; background:var(--kart); }
+#harita{ height:100%; width:100%; }
+.leaflet-container{ background:var(--kart); }
+.iss-nokta{ width:14px; height:14px; border-radius:50%; background:var(--ana2); box-shadow:0 0 14px var(--ana2); border:2px solid #000; }
+.harita-not{ position:absolute; bottom:8px; left:8px; z-index:500; background:var(--saydam); border:1px solid var(--cizgi);
+  color:var(--yazi2); font-size:10px; padding:4px 8px; border-radius:3px; }
+.harita-kontrol{ position:absolute; top:8px; right:8px; z-index:600; }
+.haritaUst{ display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
+.modBtn{ background:transparent; color:var(--yazi2); border:1px solid var(--cizgi); padding:7px 14px; cursor:pointer;
+  font-family:inherit; font-size:11px; letter-spacing:1px; border-radius:3px; }
+.modBtn.aktif{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 10px rgba(34,197,94,.25); }
+.haritaDuzen{ display:flex; gap:12px; align-items:stretch; }
+/* ================= ÜSTAD TV (sol taraf) ================= */
+.ustadTvKutu{ flex:0 0 322px; align-self:stretch; height:560px; display:flex; flex-direction:column; overflow:hidden;
+  border:1px solid var(--cizgi); border-radius:5px; background:linear-gradient(180deg, var(--kart), var(--saydam));
+  position:relative; }
+.tvBaslik{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--cizgi); background:linear-gradient(90deg, rgba(0,0,0,.45), transparent); }
+.tvLogo img{ width:26px; height:26px; border-radius:50%; border:1px solid var(--ana); box-shadow:0 0 9px -1px var(--ana); display:block; }
+.tvAd{ font-size:14px; letter-spacing:1.2px; color:var(--yazi); display:flex; flex-direction:column; line-height:1.12; }
+.tvAd b{ color:var(--ana); }
+.tvAlt{ font-size:8.5px; letter-spacing:1.6px; color:var(--soluk); }
+.tvCanli{ margin-left:auto; font-size:9px; letter-spacing:.9px; border-radius:9px; padding:2px 7px; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+ .tvCanli{ color:#9ca3af; border:1px solid rgba(156,163,175,.4); }
+ .tvCanli i{ width:6px; height:6px; border-radius:50%; background:#6b7280; }
+ .tvCanli.bekliyor{ color:#fcd34d; border-color:rgba(252,211,77,.5); }
+ .tvCanli.bekliyor i{ background:#facc15; animation:tvNokta 1s infinite; }
+ .tvCanli.yayinda{ color:#ffb4b4; border-color:rgba(255,77,77,.5); }
+ .tvCanli.yayinda i{ background:#ff3b3b; animation:tvNokta 1.4s infinite; }
+ .tvCanli.yok{ color:#fca5a5; border-color:rgba(248,113,113,.5); }
+ .tvCanli.yok i{ background:#ef4444; }
+@keyframes tvNokta{ 0%,100%{opacity:1} 50%{opacity:.2} }
+.tvGizle{ background:none; border:none; color:var(--soluk); cursor:pointer; font-size:12px; }
+.tvGizle:hover{ color:var(--ana); }
+.tvEkran{ position:relative; width:100%; aspect-ratio:16/9; background:#03060a; border-top:1px solid var(--cizgi); border-bottom:1px solid var(--cizgi); box-shadow:inset 0 0 46px #000; cursor:zoom-in; overflow:hidden; }
+.tvYtKutu{ position:absolute; top:0; left:0; width:100%; height:100%; }
+.tvYtKutu iframe{ width:100%; height:100%; border:0; display:block; }
+.tvBekleme{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  background:radial-gradient(circle at 50% 42%, rgba(120,255,190,.08), transparent 62%); text-align:center; padding:0 10px; }
+.tvBekMarka{ font-size:21px; letter-spacing:5px; color:var(--ana); text-shadow:0 0 14px var(--ana); animation:tvNefes 2.8s ease-in-out infinite; }
+.tvBekAlt{ font-size:9.5px; letter-spacing:1px; color:var(--soluk); }
+@keyframes tvNefes{ 0%,100%{opacity:.55} 50%{opacity:1} }
+.tvTamEkranCik{ display:none; position:absolute; right:10px; top:10px; background:rgba(0,0,0,.65); border:1px solid var(--ana); color:var(--ana);
+  font-size:10px; padding:4px 8px; border-radius:4px; cursor:pointer; z-index:6; }
+.tvEkran:fullscreen{ aspect-ratio:auto; width:100vw; height:100vh; cursor:default; border:0; }
+.tvEkran:fullscreen .tvTamEkranCik{ display:block; }
+/* yarım ekran: TV + canlı piyasa yan yana */
+#tvYarim{ position:fixed; inset:0; background:#000; z-index:99998; display:none; flex-direction:row; }
+#tvYarim.acik{ display:flex; }
+.yarimSol{ flex:1 1 50%; height:100%; background:#000; display:flex; align-items:center; justify-content:center; }
+.yarimSol video{ width:100%; height:100%; object-fit:contain; }
+.yarimSag{ flex:1 1 50%; height:100%; overflow:hidden; }
+#tvYarim .piyasaKutu{ flex:none; width:100%; height:100%; border:0; border-radius:0; }
+.yarimCik{ position:absolute; top:12px; right:12px; z-index:20; background:rgba(0,0,0,.72); border:1px solid var(--ana); color:var(--ana); padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px; letter-spacing:.6px; }
+.yarimCik:hover{ box-shadow:0 0 10px var(--ana); }
+.tvKumanda{ display:flex; align-items:center; gap:4px; padding:6px 8px; border-bottom:1px solid var(--cizgi); }
+.tvKumanda.ikinci{ border-bottom:none; flex-wrap:wrap; }
+.tvKumanda button{ background:var(--saydam); border:1px solid var(--cizgi); color:var(--ana); border-radius:4px; padding:3px 6px; font-size:11px; cursor:pointer; }
+.tvKumanda button:hover{ border-color:var(--ana); box-shadow:0 0 8px -1px var(--ana); }
+.tvKumanda input[type=range]{ flex:1; min-width:52px; height:3px; -webkit-appearance:none; appearance:none; background:var(--cizgi); border-radius:3px; outline:none; }
+.tvKumanda input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:11px; height:11px; border-radius:50%; background:var(--ana); box-shadow:0 0 7px var(--ana); cursor:pointer; }
+.tvSesYuzde{ font-size:9px; color:var(--soluk); width:36px; text-align:right; }
+.tvEt{ font-size:8.5px; letter-spacing:1.2px; color:var(--soluk); }
+.tvK{ font-size:9.5px !important; }
+.tvK.secili{ background:var(--ana) !important; color:#04070a !important; border-color:var(--ana) !important; }
+.tvKanallar{ flex:1 1 auto; overflow-y:auto; overflow-x:hidden; padding-right:2px; scrollbar-width:thin; scrollbar-color:var(--ana) transparent; }
+.tvKanallar::-webkit-scrollbar{ width:7px; }
+.tvKanallar::-webkit-scrollbar-track{ background:rgba(255,255,255,.04); }
+.tvKanallar::-webkit-scrollbar-thumb{ background:var(--ana); border-radius:4px; opacity:.7; }
+.tvBolumBaslik{ font-size:9px; letter-spacing:1.5px; color:var(--soluk); padding:7px 9px 3px; }
+.tvSabitler{ display:flex; gap:6px; padding:0 9px 4px; }
+.tvKart{ flex:1; text-align:left; background:var(--saydam); border:1px solid var(--cizgi); border-left:3px solid var(--kk,var(--ana)); border-radius:4px;
+  padding:6px 7px; cursor:pointer; display:flex; flex-direction:column; gap:2px; }
+.tvKart:hover{ border-color:var(--ana); }
+.tvKart.secili{ box-shadow:0 0 11px -3px var(--ana); border-color:var(--ana); }
+.tvKartUst{ font-size:11px; color:var(--yazi); display:flex; align-items:center; gap:5px; }
+.tvNokta{ width:6px; height:6px; border-radius:50%; background:#4b5563; }
+.tvKart.yayinda .tvNokta{ background:#ff3b3b; animation:tvNokta 1.4s infinite; }
+.tvDugmeler{ gap:4px; }
+.tvDug{ padding:4px 5px; font-size:9.5px; }
+.tvKart{ padding:5px 6px; }
+.tvKartUst{ font-size:10.5px; }
+.tvKartAlt{ font-size:8.5px; color:var(--soluk); }
+.tvDugmeler{ display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:0 9px 4px; }
+.tvDug{ background:var(--saydam); border:1px solid var(--cizgi); border-left:3px solid var(--kk,var(--ana)); color:var(--yazi); font-size:10px;
+  padding:5px 6px; border-radius:4px; cursor:pointer; text-align:left; }
+.tvDug:hover{ border-color:var(--ana); }
+.tvDug.secili{ color:var(--ana); border-color:var(--ana); box-shadow:0 0 9px -3px var(--ana); }
+.tvDug.kucuk{ font-size:9.5px; }
+.tvDipnot{ margin-top:auto; font-size:8px; color:var(--soluk); padding:6px 9px; border-top:1px solid var(--cizgi); line-height:1.45; }
+@media(max-width:1280px){ .ustadTvKutu{ flex:0 0 276px; } }
+@media(max-width:1080px){ .haritaDuzen{ flex-wrap:wrap; } .ustadTvKutu{ flex:1 1 100%; height:auto; margin:0 0 10px; } }
+
+/* ================= CANLI PİYASA (sol taraf) ================= */
+.piyasaKutu{ flex:0 0 300px; align-self:stretch; height:560px; display:flex; flex-direction:column; overflow:hidden;
+  border:1px solid rgba(212,175,55,.35); border-radius:5px; position:relative;
+  background:linear-gradient(180deg, rgba(212,175,55,.10), var(--kart) 34%, var(--saydam)); }
+.piBaslik{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid rgba(212,175,55,.25);
+  background:linear-gradient(90deg, rgba(212,175,55,.16), transparent); }
+.piLogo{ font-size:16px; filter:drop-shadow(0 0 8px rgba(240,201,106,.6)); }
+.piAd{ font-size:13px; letter-spacing:1.2px; color:#f0c96a; font-weight:bold; display:flex; flex-direction:column; line-height:1.12; }
+.piAd small{ font-size:8px; letter-spacing:1.6px; color:var(--soluk); font-weight:normal; }
+.piCanli{ margin-left:auto; font-size:9px; letter-spacing:.9px; border-radius:9px; padding:2px 7px; display:flex; align-items:center; gap:4px; white-space:nowrap; color:#9ca3af; border:1px solid rgba(156,163,175,.4); }
+.piCanli i{ width:6px; height:6px; border-radius:50%; background:#6b7280; }
+.piCanli.yayinda{ color:#ffb4b4; border-color:rgba(255,77,77,.5); }
+.piCanli.yayinda i{ background:#ff3b3b; animation:tvNokta 1.4s infinite; }
+.piCanli.bekliyor{ color:#fcd34d; border-color:rgba(252,211,77,.5); }
+.piCanli.bekliyor i{ background:#facc15; animation:tvNokta 1s infinite; }
+.piGovde{ flex:1 1 auto; overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; scrollbar-color:#f0c96a transparent; }
+.piGovde::-webkit-scrollbar{ width:7px; }
+.piGovde::-webkit-scrollbar-thumb{ background:#f0c96a; border-radius:4px; }
+.piBolum{ font-size:8.5px; letter-spacing:1.5px; color:#e8c766; padding:7px 10px 3px; }
+.piKurSatir{ display:flex; align-items:center; gap:7px; padding:5px 10px; border-bottom:1px dashed rgba(255,255,255,.05); }
+.piBayrak{ width:30px; height:20px; border-radius:3px; object-fit:cover; flex:0 0 30px; box-shadow:0 1px 3px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.14); }
+.piKod{ font-size:10px; color:var(--yazi); letter-spacing:.6px; width:44px; }
+.piDeger{ margin-left:auto; font-size:12px; font-weight:bold; color:#ffe9a8; letter-spacing:.4px; font-variant-numeric:tabular-nums; }
+.piAltinSatir{ display:flex; align-items:center; gap:7px; padding:6px 10px; border-bottom:1px dashed rgba(212,175,55,.12); }
+.piAltinAd{ font-size:11px; color:#f0c96a; letter-spacing:.5px; }
+.piAltinDeger{ margin-left:auto; font-size:13px; font-weight:bold; color:#ffd166; text-shadow:0 0 10px rgba(212,175,55,.45); font-variant-numeric:tabular-nums; }
+.piDip{ margin-top:auto; font-size:8px; color:var(--soluk); padding:6px 10px; border-top:1px solid rgba(212,175,55,.2); line-height:1.45; }
+@media(max-width:1280px){ .piyasaKutu{ flex:0 0 250px; } }
+@media(max-width:1080px){ .piyasaKutu{ flex:1 1 100%; height:auto; margin:0 0 10px; } }
+#haritaKutu{ flex:1 1 auto; min-width:0; height:560px; border:1px solid var(--cizgi); border-radius:4px; overflow:hidden; position:relative; background:var(--kart); }
+#kure{ height:100%; width:100%; }
+#harita{ height:100%; width:100%; }
+#yanPanel{ flex:0 0 300px; height:560px; border:1px solid var(--cizgi); border-radius:4px; background:var(--kart); display:flex; flex-direction:column; overflow:hidden; }
+.yanBaslik{ color:var(--ana2); font-size:12px; letter-spacing:1px; padding:10px 12px; border-bottom:1px solid var(--cizgi); }
+.yanHaberler{ flex:1 1 auto; overflow-y:auto; padding:5px; }
+.yanHaber{ display:block; text-decoration:none; padding:8px 9px; border-bottom:1px solid var(--cizgi); }
+.yanHaber .yhKaynak{ color:var(--ana2); font-size:9px; letter-spacing:1px; }
+.yanHaber .yhBaslik{ color:var(--yazi); font-size:11.5px; line-height:1.4; margin-top:3px; }
+.yanHaber:hover{ background:rgba(34,197,94,.07); }
+.lejant{ display:flex; flex-wrap:wrap; gap:7px 12px; padding:8px 12px; border-top:1px solid var(--cizgi); }
+.lejant span{ font-size:10px; color:var(--yazi2); }
+.lejant i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+.katIzgara{ display:flex; flex-direction:column; gap:3px; padding:8px; border-bottom:1px solid var(--cizgi); max-height:230px; overflow-y:auto; }
+.katSat{ display:flex; align-items:center; gap:7px; font-size:11px; color:var(--yazi); cursor:pointer; padding:3px 2px; }
+.katSat input{ accent-color:var(--ana); }
+.katSat i{ display:inline-block; width:9px; height:9px; border-radius:50%; }
+.ucakIkon{ color:#bae6fd; font-size:15px; text-shadow:0 0 8px #38bdf8, 0 0 16px #0284c7; pointer-events:none; }
+.asIkon{ color:#fca5a5; font-size:15px; text-shadow:0 0 8px #ef4444, 0 0 18px #7f1d1d; pointer-events:none; }
+.gemiIkon{ color:#5eead4; font-size:14px; text-shadow:0 0 8px #14b8a6, 0 0 16px #0f766e; pointer-events:none; }
+.katGrup{ color:var(--ana2); font-size:9.5px; letter-spacing:2px; margin:6px 0 2px; padding-top:5px; border-top:1px solid var(--cizgi); }
+.katGrup:first-child{ border-top:none; margin-top:0; }
+.karolar{ border-top:1px solid var(--cizgi); padding:8px; max-height:200px; overflow-y:auto; }
+.karBaslik{ color:var(--ana2); font-size:10px; letter-spacing:1px; margin-bottom:6px; }
+.karNot{ color:var(--yazi2); font-size:9px; line-height:1.5; margin-top:6px; }
+.buton.kucuk{ padding:3px 8px; font-size:9px; margin:0; }
+.linkListe{ display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.renkNot{ font-size:7px; letter-spacing:.2em; color:var(--ana2); border:1px solid var(--cizgi); padding:2px 4px; }
+/* ÜSTAD KİMLİK — başlıktaki madalyon */
+.madalyon{ width:104px; height:104px; flex:0 0 104px; border-radius:50%; overflow:hidden; position:relative;
+  border:2px solid var(--ana); box-shadow:0 0 0 3px rgba(0,0,0,.7), 0 0 26px rgba(0,0,0,.85), 0 0 22px var(--ana); }
+.madalyon::after{ content:''; position:absolute; inset:4px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.22); pointer-events:none; }
+.madalyon img{ width:100%; height:100%; object-fit:cover; display:block; }
+.markaAlt{ display:flex; flex-direction:column; line-height:1.28; }
+.markaAlt .ad{ color:var(--yazi); font-size:17px; letter-spacing:2.4px; text-shadow:0 0 12px rgba(0,0,0,.9); }
+.markaAlt .unvan{ color:var(--ana2); font-size:10px; letter-spacing:2px; }
+@media(max-width:640px){ .madalyon{ width:64px; height:64px; flex:0 0 64px; } .markaAlt .ad{ font-size:13px; } }
+.rozetKucuk{ width:16px; height:16px; border-radius:3px; overflow:hidden; border:1px solid var(--cizgi); flex:0 0 16px; }
+.rozetKucuk img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* kürenin üstündeki kimlik kartı */
+.kimlik{ position:absolute; top:10px; left:10px; z-index:650; display:flex; align-items:center; gap:9px;
+  background:var(--saydam); backdrop-filter:blur(6px); border:1px solid var(--cizgi); border-radius:40px;
+  padding:4px 14px 4px 4px; box-shadow:0 0 18px rgba(0,0,0,.6); pointer-events:none; }
+.kimlik .km{ width:34px; height:34px; border-radius:50%; overflow:hidden; flex:0 0 34px;
+  border:1.5px solid var(--ana); box-shadow:0 0 10px rgba(34,197,94,.5); }
+.kimlik .km img{ width:100%; height:100%; object-fit:cover; display:block; }
+.kimlik .ky{ display:flex; flex-direction:column; line-height:1.2; }
+.kimlik .ky .kad{ color:var(--yazi); font-size:10.5px; letter-spacing:1.6px; }
+.kimlik .ky .kun{ color:var(--ana2); font-size:7.5px; letter-spacing:2px; }
+.newsTab{ display:flex; gap:6px; padding:7px 10px; border-bottom:1px solid var(--cizgi); }
+.newsTab button{ background:transparent; color:var(--yazi2); border:1px solid var(--cizgi); border-radius:3px; padding:4px 10px; cursor:pointer; font-family:inherit; font-size:10px; }
+.newsTab button.aktif{ color:var(--ana2); border-color:var(--ana); }
+.ucusAyar{ display:flex; gap:6px; padding:8px 12px; border-top:1px solid var(--cizgi); flex-wrap:wrap; }
+.ucusAyar input{ flex:1 1 90px; min-width:80px; background:var(--kod); color:var(--yazi); border:1px solid var(--cizgi); border-radius:3px; padding:5px 7px; font-family:inherit; font-size:10px; }
+.ucusAyar button{ background:transparent; color:var(--ana2); border:1px solid var(--ana); border-radius:3px; padding:5px 10px; cursor:pointer; font-family:inherit; font-size:10px; }
+@media(max-width:820px){ .haritaDuzen{ flex-direction:column; } #yanPanel{ flex:0 0 auto; height:280px; } #haritaKutu{ height:420px; } }
+
+/* listeler */
+.kartListe{ display:flex; flex-direction:column; gap:8px; }
+.haberSatir{ background:var(--kart); border:1px solid var(--cizgi); border-radius:4px; padding:11px 13px; }
+.haberSatir .kaynak{ color:var(--ana2); font-size:9px; letter-spacing:1px; }
+.haberSatir .baslik{ color:var(--yazi); font-size:13px; margin:4px 0 3px; line-height:1.4; }
+.haberSatir .tarih{ color:var(--yazi2); font-size:10px; }
+.tbl{ width:100%; border-collapse:collapse; }
+.tbl td{ padding:8px 10px; border-bottom:1px solid var(--cizgi); font-size:13px; vertical-align:top; word-break:break-word; }
+.tbl td.k{ color:var(--yazi2); width:150px; }
+.tbl td.v{ color:var(--yazi); }
+.magRozet{ display:inline-block; min-width:34px; text-align:center; padding:2px 6px; border-radius:3px; font-weight:700; font-size:12px; }
+.depremSatir{ display:flex; align-items:center; gap:12px; padding:9px 4px; border-bottom:1px solid var(--cizgi); flex-wrap:wrap; }
+.depremSatir .yer{ color:var(--yazi); font-size:13px; }
+.depremSatir .zaman{ color:var(--yazi2); font-size:11px; }
+.linkKart{ background:var(--kart); border:1px solid var(--cizgi); border-radius:4px; padding:14px; }
+.linkKart .lkAd{ color:var(--ana2); font-size:13px; letter-spacing:1px; margin-bottom:5px; }
+.linkKart .lkNot{ color:var(--yazi2); font-size:11px; line-height:1.5; }
+.linkIzgara{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin-top:10px; }
+.buton{ display:inline-block; background:var(--ana); color:#000; border:none; border-radius:3px; padding:7px 14px;
+  font-family:inherit; font-size:11px; font-weight:700; letter-spacing:1px; cursor:pointer; text-decoration:none; margin-top:8px; }
+.buton:hover{ background:var(--ana2); }
+footer{ text-align:center; color:var(--yazi2); font-size:11px; padding:20px 16px 30px; border-top:1px solid var(--cizgi); line-height:1.7; }
+@media(max-width:520px){ #haritaKutu{ height:400px; } .glitch{ font-size:20px; } .sag{ margin-left:0; } .tbl td.k{ width:110px; } }
+/* ==== ARAÇ ÇUBUĞU · PALET · HUD · KART · v5.2 ==== */
+.aracSatir{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:6px; }
+.aracAra{ flex:1 1 230px; background:var(--kod); border:1px solid var(--cizgi); color:var(--yazi); font-family:inherit; font-size:11px; padding:6px 9px; border-radius:4px; }
+.aracBtn, .yerim, .nkMini, .dokuBtn{ background:var(--kart); border:1px solid var(--cizgi); color:var(--ana2); font-family:inherit; font-size:10px; letter-spacing:.6px; padding:5px 9px; border-radius:4px; cursor:pointer; }
+.aracBtn:hover, .yerim:hover, .nkMini:hover{ border-color:var(--ana); box-shadow:0 0 8px var(--ana); color:var(--yazi); }
+.yerim.aktif{ border-color:var(--ana); color:var(--yazi); background:var(--zemin1); }
+.sesAcik{ animation:nabiz 1s infinite; border-color:var(--hata); color:var(--hata); }
+@keyframes nabiz{ 0%,100%{ opacity:1 } 50%{ opacity:.42 } }
+.paletZemin{ position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.72); z-index:9000; display:none; }
+.paletKutu{ width:min(680px, 92vw); margin:9vh auto 0; background:var(--kart); border:1px solid var(--ana); border-radius:8px; box-shadow:0 0 40px var(--ana); overflow:hidden; }
+.paletUst{ padding:10px 14px; font-size:11px; letter-spacing:1.5px; color:var(--ana2); border-bottom:1px solid var(--cizgi); }
+.paletGirdi{ width:100%; box-sizing:border-box; background:var(--kod); border:0; border-bottom:1px solid var(--cizgi); color:var(--yazi); font-family:inherit; font-size:15px; padding:12px 14px; outline:none; }
+.paletListe{ max-height:52vh; overflow:auto; }
+.paletSat{ padding:9px 14px; font-size:12px; cursor:pointer; border-bottom:1px solid var(--cizgi); color:var(--yazi); }
+.paletSat:hover, .paletSat.sec{ background:var(--zemin1); color:var(--ana2); }
+.paletAlt{ padding:10px 14px; border-top:1px solid var(--cizgi); }
+.menuKutu{ position:fixed; z-index:9500; background:var(--kart); border:1px solid var(--ana); border-radius:6px; box-shadow:0 0 20px var(--ana); display:none; min-width:230px; }
+.menuSat{ padding:8px 12px; font-size:11px; cursor:pointer; color:var(--yazi); border-bottom:1px solid var(--cizgi); }
+.menuSat:hover{ background:var(--zemin1); color:var(--ana2); }
+.hud{ position:fixed; left:10px; bottom:10px; z-index:8000; background:var(--saydam); border:1px solid var(--cizgi); border-radius:5px; padding:5px 9px; font-size:10px; color:var(--yazi2); pointer-events:none; }
+.hud b{ color:var(--ana2); }
+.hudBuyuk{ font-size:14px; padding:9px 14px; }
+.hudBuyuk #hudSatir1{ font-size:15px; }
+.noktaKart{ position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:9200; display:none; }
+.nkKutu{ width:min(560px, 94vw); max-height:84vh; overflow:auto; margin:8vh auto 0; background:var(--kart); border:1px solid var(--ana); border-radius:8px; box-shadow:0 0 34px var(--ana); }
+.nkUst{ padding:10px 14px; border-bottom:1px solid var(--cizgi); font-size:11px; letter-spacing:1px; color:var(--ana2); display:flex; gap:10px; align-items:center; }
+.nkKapat{ margin-left:auto; background:none; border:1px solid var(--cizgi); color:var(--yazi2); border-radius:4px; cursor:pointer; padding:2px 8px; }
+.nkGovde{ padding:10px 14px; font-size:11px; }
+.nkSatir{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:5px 0; border-bottom:1px solid var(--cizgi); }
+.nkEt{ color:var(--yazi2); min-width:145px; font-size:10px; letter-spacing:.8px; }
+.nkOge{ font-size:11px; padding:2px 0; }
+.nkListe{ max-height:190px; overflow:auto; padding:6px 0; }
+.nkYer{ font-size:12px; color:var(--ana2); padding:6px 0; }
+.alarmSerit{ position:fixed; left:50%; transform:translateX(-50%); top:14px; z-index:9800; background:var(--kart); border:1px solid var(--hata); box-shadow:0 0 24px var(--hata); color:var(--yazi); padding:9px 16px; border-radius:6px; font-size:12px; display:none; }
+.onbellekSerit{ position:fixed; right:10px; bottom:10px; z-index:8000; background:var(--saydam); border:1px solid var(--cizgi); color:var(--yazi2); font-size:10px; padding:6px 10px; border-radius:5px; display:none; max-width:70vw; }
+.grafikKutu{ border:1px solid var(--cizgi); border-radius:5px; padding:7px 9px; margin-bottom:7px; background:var(--kod); }
+.grafikBaslik{ display:flex; gap:8px; align-items:baseline; font-size:10px; color:var(--yazi2); margin-bottom:4px; }
+.grafikBaslik b{ font-size:13px; }
+.ortala{ text-align:center; margin:8px 0; }
+.giris{ background:var(--kod); border:1px solid var(--cizgi); color:var(--yazi); font-family:inherit; font-size:11px; padding:4px 7px; border-radius:4px; width:100%; box-sizing:border-box; }
+body.geceNobeti{ filter:brightness(.66) contrast(1.05); }
+body.kiosk #ustNav, body.kiosk .baslikAlan, body.kiosk footer, body.kiosk #yanPanel{ display:none !important; }
+body.kiosk{ cursor:none; }
+body.kiosk #hud{ font-size:13px; }
+@media (max-width: 780px){
+  body.telefonMod .haritaDuzen{ display:block !important; }
+  body.telefonMod #yanPanel{ width:auto !important; margin-top:10px; }
+  body.telefonMod #ustNav a{ font-size:11px; padding:5px 7px; }
+  body.telefonMod .aracBtn, body.telefonMod .yerim{ font-size:12px; padding:8px 10px; }
+  body.telefonMod .kartListe{ display:block !important; }
+}
+/* ==== OBS / YAYIN + ERİŞİLEBİLİRLİK (v5.4) ==== */
+.obsBant{ position:fixed; left:0; right:0; bottom:0; z-index:8500; background:var(--bar); border-top:2px solid var(--ana);
+  color:var(--ana2); font-family:inherit; font-size:13px; padding:9px 16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.obsTabela{ position:fixed; right:12px; top:12px; z-index:8500; background:var(--saydam); border:1px solid var(--ana);
+  border-radius:6px; padding:8px 14px; font-size:12px; color:var(--yazi); box-shadow:0 0 18px var(--ana); }
+body.obsMod #ustNav, body.obsMod footer, body.obsMod #yanPanel{ display:none !important; }
+body.buyukYazi{ font-size:18px; }
+body.buyukYazi table.tbl td, body.buyukYazi .nkOge, body.buyukYazi .sonuc{ font-size:15px !important; }
+body.buyukYazi .arsacBtn, body.buyukYazi .aracBtn, body.buyukYazi .yerim{ font-size:13px !important; }
+body.renkKoru{ filter:grayscale(.85) contrast(1.25) brightness(1.05); }
+body.yuksekKontrast{ filter:contrast(1.5) saturate(1.3); }
+.ekranKoruyucu{ position:fixed; top:0; left:0; right:0; bottom:0; z-index:8700; background:radial-gradient(circle at 50% 50%, #062814 0%, #000 70%);
+  color:#c9ffd8; font-family:Consolas,monospace; display:none; text-align:center; }
+.ekranKoruyucu .saat{ font-size:clamp(48px,12vw,160px); letter-spacing:12px; text-shadow:0 0 30px #22c55e,0 0 90px rgba(34,197,94,.6); margin-top:12vh; }
+.ekranKoruyucu .tarih{ font-size:clamp(14px,2.4vw,26px); letter-spacing:5px; color:#7bffa1; margin-top:8px; }
+.ekranKoruyucu .skor{ font-size:clamp(20px,4vw,52px); margin-top:4vh; }
+.ekranKoruyucu .liste{ max-width:820px; margin:4vh auto 0; text-align:left; font-size:clamp(11px,1.5vw,17px); line-height:1.9; }
+.ekranKoruyucu .imza{ position:absolute; bottom:22px; left:0; right:0; font-size:12px; letter-spacing:3px; color:#4fd97a; }
+.kureKoni{ position:absolute; left:50%; bottom:50%; width:2px; height:44vh; transform-origin:bottom center;
+  background:linear-gradient(0deg, rgba(34,197,94,.35), transparent); filter:blur(2px); animation:koniDon 14s linear infinite; pointer-events:none; }
+@keyframes koniDon{ to{ transform:rotate(360deg); } }
+
+/* ================= ÜSTAD RADYO (üst şerit — RENK çubuğunun solundaki boşluk) ================= */
+.ustadRadyo{
+  /* flex-basis KUCUK olmali: buyuk basis yuzunden satir kirilip ust serit
+     bir satir uzuyordu (1600px'te +60px). 420px basis ile .sag ile ayni
+     satiri paylasiyor, sonra buyuyup bosluğu dolduruyor. 19.09.2026 olcumu. */
+  flex:1 1 420px; min-width:0; max-width:1130px; height:46px; margin:0;
+  display:flex; align-items:center; gap:10px; padding:0 13px;
+  border:1px solid var(--cizgi); border-radius:24px; background:var(--kart);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 2px 12px rgba(0,0,0,.20);
+  position:relative; overflow:hidden; font-family:inherit;
+}
+.ustadRadyo::before{
+  content:""; position:absolute; left:-60px; top:-46px; width:230px; height:150px;
+  background:radial-gradient(circle, var(--ana) 0%, transparent 68%);
+  opacity:.13; pointer-events:none;
+}
+.urMarka{ display:flex; align-items:center; gap:7px; flex:0 0 auto; position:relative; }
+.urNota{ color:var(--ana2); font-size:14px; line-height:1; }
+.urAd{ color:var(--ana2); font-size:10.5px; letter-spacing:1.6px; font-weight:700; white-space:nowrap; }
+.urAd small{ color:var(--soluk); font-weight:400; letter-spacing:.6px; }
+.urDalgacik{ display:inline-flex; align-items:flex-end; gap:2px; height:13px; margin-left:2px; }
+.urDalgacik i{ width:2px; height:4px; border-radius:2px; background:var(--ana); opacity:.45; }
+.ustadRadyo.caliyor .urDalgacik i{ animation:urDalga .9s ease-in-out infinite; opacity:1; }
+.urDalgacik i:nth-child(2){ animation-delay:.15s; }
+.urDalgacik i:nth-child(3){ animation-delay:.3s; }
+@keyframes urDalga{ 0%,100%{ height:4px; } 50%{ height:13px; } }
+.urAra{ width:1px; height:22px; background:var(--cizgi); flex:0 0 auto; }
+.urKanallar{ display:flex; align-items:center; gap:6px; flex:1 1 auto; min-width:0;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
+.urKanallar::-webkit-scrollbar{ display:none; }
+.urChip{
+  flex:0 0 auto; background:transparent; color:var(--yazi2); border:1px solid var(--cizgi);
+  border-radius:13px; padding:5px 11px; font-family:inherit; font-size:10.5px; letter-spacing:.4px;
+  cursor:pointer; white-space:nowrap; transition:color .18s, border-color .18s, box-shadow .18s, transform .18s;
+}
+.urChip:hover{ color:var(--yazi); border-color:var(--ana); transform:translateY(-1px); }
+.urChip.aktif{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 12px -3px var(--ana); }
+.urDugme{
+  flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:transparent;
+  border:1px solid var(--cizgi); color:var(--yazi2); cursor:pointer; font-size:11px; line-height:1;
+  display:grid; place-items:center; transition:color .18s, border-color .18s, box-shadow .18s; user-select:none;
+}
+.urDugme:hover{ color:var(--ana2); border-color:var(--ana); }
+.urDugme.caliyor{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 14px -3px var(--ana); }
+.urSesSar{ display:flex; align-items:center; gap:6px; flex:0 0 auto; }
+.urSesSar span{ font-size:10px; color:var(--soluk); }
+.urSes{ -webkit-appearance:none; appearance:none; width:74px; height:3px; border-radius:3px;
+  background:var(--cizgi); outline:none; cursor:pointer; }
+.urSes::-webkit-slider-thumb{ -webkit-appearance:none; width:11px; height:11px; border-radius:50%;
+  background:var(--ana); border:0; box-shadow:0 0 8px -1px var(--ana); cursor:pointer; }
+.urDurum{ flex:0 0 auto; font-size:10px; color:var(--soluk); letter-spacing:.4px;
+  white-space:nowrap; min-width:104px; text-align:right; }
+.urSaat{ flex:0 0 auto; color:var(--ana2); font-size:12.5px; letter-spacing:1px;
+  font-variant-numeric:tabular-nums; white-space:nowrap; }
+@media(max-width:1560px){ .urDurum{ display:none; } }
+@media(max-width:1360px){ .urSaat{ display:none; } .urAd small{ display:none; } .urSes{ width:56px; } }
+@media(max-width:1180px){ .ustadRadyo{ display:none; } }
+
+/* ================= IPTV · KENDİ YAYININ (DİĞER sekmesi — ÖN PANELDE GÖRÜNMEZ) ================= */
+.iptvKutu{ background:var(--kart); border:1px solid var(--cizgi); border-radius:8px;
+  padding:14px 16px; margin:18px 0 4px; }
+.iptvBas{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.iptvAd{ color:var(--ana2); font-size:13px; letter-spacing:1.6px; font-weight:700; }
+.iptvAlt{ color:var(--soluk); font-size:11px; }
+.iptvGiris{ display:flex; gap:8px; flex-wrap:wrap; }
+.iptvInput{ flex:1 1 380px; min-width:0; background:var(--kod); border:1px solid var(--cizgi);
+  border-radius:5px; color:var(--yazi); padding:9px 11px; font-family:inherit; font-size:12px; }
+.iptvInput:focus{ outline:none; border-color:var(--ana); }
+.iptvCipSar{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin:10px 0 2px; font-size:11px; }
+.iptvCip{ display:inline-flex; align-items:center; gap:6px; background:transparent;
+  border:1px solid var(--cizgi); border-radius:12px; padding:4px 9px; cursor:pointer;
+  transition:border-color .18s, color .18s; }
+.iptvCip b{ font-weight:400; color:var(--yazi2); font-size:10.5px; }
+.iptvCip:hover{ border-color:var(--ana); }
+.iptvCip:hover b{ color:var(--ana2); }
+.iptvCip i{ font-style:normal; color:var(--soluk); font-size:12px; line-height:1; padding:0 1px; }
+.iptvCip i:hover{ color:var(--hata); }
+.iptvEkle{ display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 0; padding:10px;
+  border:1px dashed var(--cizgi); border-radius:6px; }
+.iptvEkle .iptvInput{ flex:1 1 200px; }
+.iptvEkle .iptvInput.kucuk{ flex:0 1 150px; }
+.iptvSahne{ position:relative; margin:0; border:1px solid var(--cizgi); border-radius:6px;
+  overflow:hidden; background:#000; aspect-ratio:16 / 9; flex:0 1 820px; max-width:820px; }
+.iptvDuzen{ display:flex; gap:16px; align-items:flex-start; margin-top:12px; }
+.iptvSol{ flex:1 1 auto; min-width:0; display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
+.iptvSatir2{ flex:1 1 100%; }
+.iptvSag{ flex:0 0 420px; min-width:0; border-left:1px solid var(--cizgi); padding-left:16px; }
+/* dizi & film kısayolları — videonun sagindaki bosluga oturur */
+.iptvDizi{ flex:1 1 300px; min-width:270px; border-left:1px solid var(--cizgi); padding-left:14px; }
+.iptvDiziBas{ font-size:11px; letter-spacing:1.4px; color:var(--ana2); font-weight:700; margin-bottom:9px; }
+.iptvDiziBas .soluk{ letter-spacing:0; font-weight:400; font-size:10px; margin-left:6px; }
+.iptvDiziIzgara{ display:grid; grid-template-columns:repeat(auto-fill,minmax(126px,1fr)); gap:7px; }
+.iptvDiziKart{ display:flex; flex-direction:column; gap:3px; border:1px solid var(--cizgi);
+  border-radius:6px; padding:8px 10px; text-decoration:none;
+  transition:border-color .18s, transform .18s, box-shadow .18s; }
+.iptvDiziKart b{ color:var(--ana2); font-weight:600; font-size:11.5px; }
+.iptvDiziKart span{ color:var(--soluk); font-size:9.5px; line-height:1.35; }
+.iptvDiziKart:hover{ border-color:var(--ana); transform:translateY(-2px); text-decoration:none;
+  box-shadow:0 6px 16px rgba(0,0,0,.22); }
+@media(max-width:1240px){
+  .iptvDuzen{ flex-direction:column; }
+  .iptvSag{ flex:1 1 auto; width:100%; border-left:0; padding-left:0;
+    border-top:1px solid var(--cizgi); padding-top:12px; }
+  .iptvSahne{ flex:1 1 100%; max-width:100%; }
+  .iptvDizi{ flex:1 1 100%; min-width:0; border-left:0; padding-left:0;
+    border-top:1px solid var(--cizgi); padding-top:12px; }
+}
+.iptvSahne video{ width:100%; height:100%; display:block; object-fit:contain; background:#000; }
+.iptvBos{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:6px; color:var(--soluk); font-size:12px; text-align:center; pointer-events:none; }
+.iptvBos small{ font-size:10.5px; opacity:.75; }
+.iptvSatir2{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+.iptvDurum{ font-size:11px; color:var(--ana2); letter-spacing:.4px; min-height:16px; }
+.iptvSimdiki{ font-size:10.5px; color:var(--soluk); }
+.iptvBolum{ margin-top:14px; border-top:1px solid var(--cizgi); padding-top:11px; }
+.iptvBolumBas{ display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  font-size:11px; letter-spacing:1.4px; color:var(--ana2); font-weight:700; margin-bottom:9px; }
+.iptvBolumBas .soluk{ letter-spacing:0; font-weight:400; font-size:10.5px; }
+.iptvMini{ margin-left:auto; background:transparent; border:1px solid var(--cizgi); color:var(--yazi2);
+  border-radius:11px; padding:3px 10px; font-family:inherit; font-size:10px; cursor:pointer;
+  letter-spacing:.4px; transition:color .18s, border-color .18s; }
+.iptvMini:hover{ color:var(--hata); border-color:var(--hata); }
+.iptvKatSar{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+.iptvKat{ border:1px solid var(--cizgi); border-radius:12px; padding:4px 10px; font-size:10.5px;
+  color:var(--yazi2); cursor:pointer; transition:color .16s, border-color .16s, box-shadow .16s; }
+.iptvKat b{ color:var(--soluk); font-weight:600; margin-left:3px; }
+.iptvKat:hover{ color:var(--yazi); border-color:var(--ana); }
+.iptvKat.sec{ color:var(--ana2); border-color:var(--ana); box-shadow:0 0 10px -3px var(--ana); }
+.iptvKat.sec b{ color:var(--ana2); }
+.iptvTabloSar{ border:1px solid var(--cizgi); border-radius:6px; overflow:auto; max-height:430px; }
+.iptvTablo{ width:100%; border-collapse:collapse; font-size:11.5px; }
+.iptvTablo thead th{ position:sticky; top:0; z-index:2; background:var(--zemin1);
+  color:var(--soluk); font-weight:600; letter-spacing:.9px; text-align:left;
+  padding:7px 9px; border-bottom:1px solid var(--cizgi); font-size:10px; }
+.iptvTablo tbody td{ padding:6px 9px; border-bottom:1px solid var(--cizgi); color:var(--yazi2); }
+.iptvTablo tbody tr:hover td{ background:var(--zemin1); color:var(--yazi); }
+.iptvTablo tr.iptvAktif td{ color:var(--ana2); }
+.iptvTablo tr.iptvAktif td:first-child{ box-shadow:inset 3px 0 0 var(--ana); }
+.iptvSira{ width:38px; color:var(--soluk); font-variant-numeric:tabular-nums; }
+.iptvCAd{ color:var(--yazi); }
+.iptvCGrup{ width:150px; color:var(--soluk); }
+.iptvCIslem{ width:74px; white-space:nowrap; text-align:right; }
+.iptvIkon{ background:transparent; border:1px solid var(--cizgi); color:var(--yazi2); cursor:pointer;
+  border-radius:4px; width:26px; height:22px; font-size:10px; font-family:inherit; margin-left:4px;
+  transition:color .16s, border-color .16s; }
+.iptvIkon:hover{ color:var(--ana2); border-color:var(--ana); }
+.iptvIkon.sil:hover{ color:var(--hata); border-color:var(--hata); }
+.iptvBosSatir{ text-align:center; color:var(--soluk); padding:16px 10px !important; font-size:11px; }
+.iptvNot{ font-size:10.5px; }
+.iptvUyari{ margin-top:10px; font-size:10.8px; color:var(--soluk); line-height:1.5;
+  border-top:1px solid var(--cizgi); padding-top:9px; }
+.iptvUyari b{ color:var(--ana2); font-weight:600; }
+
+/* ============ BELGE KASASI + ŞİFRE KASASI (kasa.js) ============ */
+.bkKutu{ margin-top:16px; border:1px solid var(--cizgi); border-radius:8px; padding:14px;
+  background:var(--kart); transition:box-shadow .18s; }
+.bkKutu.bkUzerinde{ box-shadow:0 0 0 2px var(--ana2) inset; }
+.bkBas{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.bkAd{ font-size:12px; font-weight:700; letter-spacing:1.6px; color:var(--ana2); }
+.bkAlt{ font-size:10.5px; color:var(--soluk); flex:1 1 auto; }
+.bkRozet{ font-size:9.5px; letter-spacing:1.4px; padding:3px 9px; border-radius:20px;
+  border:1px solid var(--cizgi); color:var(--soluk); }
+.bkRozet.acik{ color:var(--ana2); border-color:var(--ana2); }
+.bkGiris{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.bkGiris .iptvInput{ flex:0 1 250px; }
+.bkOnay{ display:inline-flex; align-items:center; gap:5px; font-size:10.5px; color:var(--soluk); }
+.bkNot{ font-size:10.5px; color:var(--soluk); }
+.bkArac{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+.bkArac .iptvInput{ flex:0 1 150px; }
+.bkDurum{ font-size:11px; color:var(--ana2); flex:1 1 100%; }
+.bkKlasorSar{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:9px; }
+.bkKlasor{ font-size:10.5px; padding:5px 11px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--cizgi); color:var(--yazi2); background:transparent; user-select:none; }
+.bkKlasor:hover{ border-color:var(--ana2); }
+.bkKlasor.sec{ border-color:var(--ana2); color:var(--ana2); font-weight:700; }
+.bkKlasor b{ font-weight:700; opacity:.75; }
+.bkHedef{ font-size:10.5px; color:var(--soluk); margin-bottom:10px; }
+.bkHedef b{ color:var(--ana2); }
+.bkIzgara{ display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px; }
+.bkKart{ border:1px solid var(--cizgi); border-radius:7px; padding:9px; position:relative;
+  background:var(--arka2); display:flex; flex-direction:column; gap:5px; }
+.bkKartSimge{ font-size:22px; text-align:center; }
+.bkKartAd{ font-size:11px; word-break:break-all; line-height:1.35; max-height:32px; overflow:hidden; }
+.bkKartAlt{ display:flex; justify-content:space-between; font-size:9.5px; color:var(--soluk); }
+.bkKartIslem{ display:flex; gap:4px; justify-content:center; margin-top:2px; }
+.bkBosluk{ padding:18px; text-align:center; font-size:11px; grid-column:1 / -1; }
+.bkAlt2{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; }
+.bkIpucuKutu{ display:flex; gap:7px; flex-wrap:wrap; margin-top:8px; padding:10px;
+  border:1px dashed var(--cizgi); border-radius:6px; }
+.bkIpucuKutu .iptvInput{ flex:0 1 230px; }
+.bkForm{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; padding:10px;
+  border:1px dashed var(--cizgi); border-radius:6px; }
+.bkForm .iptvInput{ flex:0 1 190px; }
+.bkTabloSar{ max-height:340px; overflow:auto; border:1px solid var(--cizgi); border-radius:6px; }
+.skParola{ font-family:var(--mono,monospace); letter-spacing:1px; }
+/* dosya görüntüleyici */
+.bkBak{ position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:9000;
+  display:flex; align-items:center; justify-content:center; padding:24px; }
+.bkBakIc{ width:min(1200px,96vw); height:min(88vh,900px); background:var(--kart);
+  border:1px solid var(--cizgi); border-radius:9px; display:flex; flex-direction:column; overflow:hidden; }
+.bkBakBas{ display:flex; align-items:center; gap:10px; padding:10px 13px; border-bottom:1px solid var(--cizgi);
+  font-size:11px; flex-wrap:wrap; }
+.bkBakBas #bkBakAd{ font-weight:700; color:var(--ana2); flex:1 1 200px; word-break:break-all; }
+.bkBakGovde{ flex:1 1 auto; overflow:auto; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.28); padding:8px; }
+.bkBakGovde img{ max-width:100%; max-height:100%; object-fit:contain; }
+.bkBakGovde iframe{ width:100%; height:100%; border:0; background:#fff; }
+.bkBakGovde video{ max-width:100%; max-height:100%; background:#000; }
+.bkBakGovde audio{ width:min(560px,90%); }
+.bkMetin{ width:100%; height:100%; overflow:auto; margin:0; padding:14px; font-family:var(--mono,monospace);
+  font-size:11.5px; line-height:1.6; white-space:pre-wrap; word-break:break-word; color:var(--yazi); }
+.bkNot2{ padding:22px; font-size:12px; color:var(--yazi2); text-align:center; }
+/* kurtarma kodu penceresi */
+.bkKodKutu{ position:fixed; inset:0; background:rgba(0,0,0,.86); z-index:9500;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:26px; }
+.bkKodBas{ font-size:14px; letter-spacing:2px; color:var(--ana2); font-weight:700; }
+.bkKodNot{ font-size:12px; color:var(--yazi2); max-width:620px; text-align:center; line-height:1.6; }
+.bkKodYer{ font-size:11px; color:var(--soluk); }
+/* eğitim kasası */
+.ekDuzen{ display:flex; gap:14px; align-items:flex-start; }
+.ekMenu{ flex:0 0 238px; max-height:620px; overflow:auto; border:1px solid var(--cizgi); border-radius:7px; }
+.ekSatir{ display:flex; align-items:center; gap:7px; padding:7px 9px; cursor:pointer;
+  border-bottom:1px solid var(--cizgi); font-size:11px; }
+.ekSatir:last-child{ border-bottom:0; }
+.ekSatir:hover{ background:var(--arka2); }
+.ekSatir.sec{ background:var(--arka2); color:var(--ana2); font-weight:700;
+  box-shadow:inset 3px 0 0 var(--ana2); }
+.ekSimge{ font-size:13px; flex:0 0 16px; }
+.ekAd{ flex:1 1 auto; }
+.ekSayi{ font-size:9.5px; color:var(--soluk); }
+.ekSag{ flex:1 1 auto; min-width:0; }
+.ekBas{ display:flex; align-items:baseline; gap:10px; margin-bottom:8px;
+  font-size:11px; letter-spacing:1.5px; color:var(--ana2); font-weight:700; }
+.ekListe{ max-height:620px; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:2px; }
+.ekKart{ border:1px solid var(--cizgi); border-radius:7px; padding:10px 11px; background:var(--arka2);
+  transition:border-color .15s; }
+.ekKart:hover{ border-color:var(--ana2); }
+.ekKartBas{ display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; }
+.ekSira{ font-size:9.5px; color:var(--soluk); min-width:20px; text-align:right; }
+.ekKartAd{ font-size:12px; font-weight:700; color:var(--ana2); font-family:var(--mono,monospace); }
+.ekRozetK{ font-size:9px; letter-spacing:1px; padding:2px 7px; border-radius:20px; border:1px solid var(--cizgi); color:var(--soluk); }
+.ekUst{ font-size:9.5px; color:var(--soluk); margin:3px 0 5px; letter-spacing:.6px; }
+.ekMetin{ font-size:11px; line-height:1.6; color:var(--yazi); white-space:pre-wrap; word-break:break-word; }
+.ekKod{ margin-top:8px; border:1px solid var(--cizgi); border-radius:6px; padding:8px; background:rgba(0,0,0,.22); }
+.ekKod pre{ margin:0 0 6px; font-family:var(--mono,monospace); font-size:10.5px; line-height:1.55;
+  white-space:pre-wrap; word-break:break-word; color:var(--yazi); }
+.ekBos{ padding:16px; text-align:center; font-size:11px; }
+/* grup başlığı */
+.ekGrupBas{ font-size:10px; letter-spacing:2px; color:var(--ana2); font-weight:700;
+  border-bottom:1px solid var(--cizgi); padding:12px 2px 5px; margin-top:4px; }
+.ekGrupBas:first-child{ margin-top:0; padding-top:2px; }
+/* çözülebilir test */
+.ekT-soru{ border-left:3px solid var(--ana2); }
+.ekSiklar{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.ekSik{ text-align:left; font-size:11px; line-height:1.5; padding:8px 10px; cursor:pointer;
+  border:1px solid var(--cizgi); border-radius:6px; background:transparent; color:var(--yazi);
+  font-family:inherit; transition:all .14s; }
+.ekSik:hover{ border-color:var(--ana2); }
+.ekSik b{ color:var(--ana2); margin-right:4px; }
+.ekSik.dogru{ border-color:#2ecc71; color:#2ecc71; font-weight:700; }
+.ekSik.dogru b{ color:#2ecc71; }
+.ekSik.yanlis{ border-color:#e74c3c; color:#e74c3c; }
+.ekSik.yanlis b{ color:#e74c3c; }
+.ekCevap{ margin-top:9px; padding:9px 10px; border-radius:6px; font-size:10.5px; line-height:1.6;
+  border:1px dashed var(--cizgi); background:rgba(0,0,0,.18); }
+.ekNot3{ font-size:9.5px; color:var(--soluk); margin-top:7px; font-style:italic; }
+.ekDaha{ text-align:center; padding:10px; }
+/* gizli “KASALAR” şeridi (fotoğrafa çift tıklayınca çıkar) */
+.kasaSecici{ position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:9600;
+  display:flex; align-items:center; gap:7px; padding:8px 12px; border-radius:30px;
+  background:var(--kart); border:1px solid var(--ana2); box-shadow:0 6px 26px rgba(0,0,0,.5);
+  animation:ksGel .25s ease-out; }
+@keyframes ksGel{ from{ opacity:0; transform:translateX(-50%) translateY(-14px); } to{ opacity:1; } }
+.ksBas{ font-size:9.5px; letter-spacing:2px; color:var(--soluk); margin-right:2px; }
+.ksBtn{ font-size:11px; padding:5px 12px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--cizgi); color:var(--yazi2); transition:all .14s; white-space:nowrap; }
+.ksBtn:hover{ border-color:var(--ana2); color:var(--ana2); }
+.ksYok{ opacity:.35; }
+/* çalışma takibi: okundu işareti + ilerleme */
+.ekOkuBtn{ margin-left:auto; font-size:9.5px; padding:3px 9px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--cizgi); background:transparent; color:var(--soluk); font-family:inherit;
+  transition:all .14s; white-space:nowrap; }
+.ekOkuBtn:hover{ border-color:var(--ana2); color:var(--ana2); }
+.ekOkuBtn.sec{ border-color:#2ecc71; color:#2ecc71; }
+.ekKart.ekOkundu{ border-left:3px solid #2ecc71; opacity:.82; }
+.ekOkSayi{ font-size:9px; color:#2ecc71; margin-left:4px; }
+.ekIlerleme{ margin-left:auto; font-size:10px; color:var(--ana2); letter-spacing:.5px; }
+.ekIlerleme b{ font-weight:700; }
+.ekVurgu{ animation:ekVrg 1s ease-in-out 3; }
+@keyframes ekVrg{ 0%,100%{ box-shadow:none; } 50%{ box-shadow:0 0 0 2px var(--ana2) inset; } }
+@media(max-width:1240px){
+  .ekDuzen{ flex-direction:column; }
+  .ekMenu{ flex:1 1 auto; width:100%; max-height:230px; }
+}
+
+/* ================= ÖZEL BAĞLANTILAR (kilitli bölme) ================= */
+.kasaKutu{ margin-top:16px; border:1px solid var(--cizgi); border-radius:8px; padding:14px 16px;
+  background:var(--kart); position:relative; overflow:hidden; }
+.kasaKutu::before{ content:""; position:absolute; right:-50px; top:-60px; width:200px; height:150px;
+  background:radial-gradient(circle, var(--vurgu) 0%, transparent 70%); opacity:.10; pointer-events:none; }
+.kasaBas{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.kasaAd{ color:var(--vurgu); font-size:13px; letter-spacing:1.6px; font-weight:700; }
+.kasaAlt{ color:var(--soluk); font-size:10.5px; }
+.kasaRozet{ margin-left:auto; font-size:9.5px; letter-spacing:1.4px; padding:3px 10px; border-radius:11px;
+  border:1px solid var(--cizgi); color:var(--soluk); }
+.kasaRozet.acik{ color:var(--ok, #3ddc97); border-color:var(--ok, #3ddc97); }
+.kasaGiris{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.kasaGiris .iptvInput{ flex:0 1 260px; }
+.kasaNot{ color:var(--soluk); font-size:10.5px; }
+.kasaArac{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+.kasaLinkSar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+.kasaLinkSar .iptvInput{ flex:1 1 340px; min-width:190px; }
+.kasaLinkSar .buton{ white-space:nowrap; }
+.kasaDurum{ font-size:11px; color:var(--ana2); }
+.kasaForm{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; padding:10px;
+  border:1px dashed var(--cizgi); border-radius:6px; }
+.kasaForm .iptvInput{ flex:1 1 200px; }
+.kasaForm .iptvInput.kucuk{ flex:0 1 150px; }
+.kasaListe{ max-height:320px; overflow:auto; border:1px solid var(--cizgi); border-radius:6px; }
+.kasaBos{ padding:16px; text-align:center; font-size:11px; }
+/* kasa içi IPTV paneli: solda oynatıcı, sağda kayıtlar */
+.kasaDuzen{ display:flex; gap:14px; align-items:flex-start; }
+.kasaSol{ flex:1 1 auto; min-width:0; }
+.kasaSag{ flex:0 0 380px; min-width:0; border-left:1px solid var(--cizgi); padding-left:14px; }
+.kasaSahne{ position:relative; border:1px solid var(--cizgi); border-radius:6px; overflow:hidden;
+  background:#000; aspect-ratio:16 / 9; width:100%; }
+.kasaSahne video{ width:100%; height:100%; display:block; object-fit:contain; background:#000; }
+.kasaOynSatir{ display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap; }
+.kasaOynDurum{ font-size:11px; color:var(--ana2); }
+.kasaBolumBas{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:9px;
+  font-size:11px; letter-spacing:1.4px; color:var(--ana2); font-weight:700; }
+.kasaBolumBas .iptvInput{ flex:0 1 110px; padding:4px 8px; font-size:10.5px; }
+.kasaKatSar{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:9px; }
+@media(max-width:1240px){
+  .kasaDuzen{ flex-direction:column; }
+  .kasaSag{ flex:1 1 auto; width:100%; border-left:0; padding-left:0;
+    border-top:1px solid var(--cizgi); padding-top:12px; }
+}
+.kasaUyari{ margin-top:10px; font-size:10.5px; color:var(--soluk); line-height:1.5;
+  border-top:1px solid var(--cizgi); padding-top:9px; }
+</style>
+</head>
+<body data-renk="monitor">
+
+<canvas id="matris"></canvas>
+
+<header class="ustBar">
+  <div class="marka"><span class="madalyon"><img src="foto/ustad-kenan.jpg" alt="Kenan Kuzucu"></span><span class="markaAlt"><span class="ad">ÜSTAD KENAN KUZUCU</span><span class="unvan">PANEL SAHİBİ · GAZİANTEP</span></span><span class="markaAd"><span class="ustad">ÜSTAD</span>MONİTÖR</span><span class="betaGlitch">BETA</span><span class="rozetKucuk"><img src="foto/rozet.png" alt="ÜSTAD"></span></div>
+  <nav class="ustNav" id="ustNav">
+    <a data-git="harita" onclick="git('harita')">HARİTA</a>
+    <a data-git="haber" onclick="git('haber')">HABER</a>
+    <a data-git="piyasa" onclick="git('piyasa')">PİYASA</a>
+    <a data-git="deprem" onclick="git('deprem')">DEPREM</a>
+    <a data-git="yangin" onclick="git('yangin')">YANGIN</a>
+    <a data-git="iss" onclick="git('iss')">ISS</a>
+    <a data-git="firlatma" onclick="git('firlatma')">FIRLATMA</a>
+    <a data-git="uydular" onclick="git('uydular')">UYDULAR</a>
+    <a data-git="uzay" onclick="git('uzay')">UZAY</a>
+    <a data-git="afet" onclick="git('afet')">AFET</a>
+    <a data-git="deniz" onclick="git('deniz')">DENİZ</a>
+    <a data-git="hava" onclick="git('hava')">HAVA</a>
+    <a data-git="saglik" onclick="git('saglik')">SAĞLIK</a>
+    <a data-git="uyari" onclick="git('uyari')">UYARILAR</a>
+    <a data-git="tehdit" onclick="git('tehdit')">SİBER TEHDİT</a>
+    <a data-git="alarm" onclick="git('alarm')">ALARM</a>
+    <a data-git="ayarlar" onclick="git('ayarlar')">AYARLAR</a>
+    <a data-git="bolgem" onclick="git('bolgem')">BÖLGEM</a>
+    <a data-git="zeka" onclick="git('zeka')">ZEKÂ</a>
+    <a data-git="guvenlik" onclick="git('guvenlik')">GÜVENLİK</a>
+    <a data-git="disari" onclick="git('disari')">DIŞARI</a>
+    <a data-git="kaynaklar" onclick="git('kaynaklar')">KAYNAKLAR</a>
+    <a data-git="diger" onclick="git('diger')">DİĞER</a>
+  </nav>
+  <aside class="ustadRadyo" id="ustadRadyo" aria-label="ÜSTAD RADYO — 7/24 canlı"></aside>
+  <div class="sag">
+    <span class="canli"><span class="canliNokta"></span>LIVE</span>
+    <span class="renkBar"><span class="etiket">RENK</span>
+      <button class="renkBtn aktif" data-r="monitor">MONİTÖR</button>
+      <button class="renkBtn" data-r="hacker">HACKER</button>
+      <button class="renkBtn" data-r="istihbarat">İSTİHBARAT</button>
+      <button class="renkBtn" data-r="alarm">ALARM</button>
+      <button class="renkBtn" data-r="siber">SİBER</button>
+      <button class="renkBtn" data-r="amber">AMBER</button>
+      <button class="renkBtn" data-r="mor">MOR</button>
+      <button class="renkBtn" data-r="matbaa">MATBAA</button>
+      <button class="renkBtn" data-r="terminal">TERMİNAL</button>
+      <button class="renkBtn" data-r="matrix">MATRIX</button>
+      <button class="renkBtn" data-r="neon">NEON</button>
+      <button class="renkBtn" data-r="col">ÇÖL</button>
+      <button class="renkBtn" data-r="orman">ORMAN</button>
+      <button class="renkBtn" data-r="acik">AÇIK</button>
+      <button class="renkBtn" data-r="kagit">KAĞIT</button>
+      <button class="renkBtn" data-r="buz">BUZ</button>
+      <button class="renkBtn" data-r="lavanta">LAVANTA</button>
+      <button class="renkBtn" data-r="altin">ALTIN</button>
+      <button class="renkBtn" data-r="gece">GECE</button>
+      <button class="renkBtn yagmurBtn" id="yagmurBtn" onclick="matrisAcKapat()">☔ YAĞMUR</button>
+    </span>
+  </div>
+</header>
+
+<div class="baslikAlan">
+  <div class="glitch">ÜSTAD DÜNYA MONİTÖRÜ</div>
+  <p class="altBaslik">CANLI KÜRESEL DURUM FARKINDALIĞI · v5.5</p>
+  <div class="durumCubugu"><span class="yesil">▮</span> DEPREM · AFET · UYDU · UÇAK · GEMİ · AURORA · HAVA · VOLKAN · ISS · KABLO · HABER</div>
+</div>
+
+<main id="icerik"></main>
+
+<footer>
+  Kaynaklar (ücretsiz API): USGS (deprem) · GDACS (küresel afet) · NASA EONET (yangın/afet) · NASA GIBS (uydu görüntüsü) ·
+  NOAA SWPC (aurora/Kp/güneş rüzgârı) · CelesTrak + satellite.js (canlı yörünge) · Open-Meteo (hava/hava kalitesi/dalga/rüzgâr) ·
+  Digitraffic AIS (gemiler) · adsb.lol (askerî uçaklar) · api.weather.gov (uyarılar) · USGS HANS (volkan) · RainViewer (yağış radarı) ·
+  wheretheiss.at (ISS) · CoinGecko (kripto) · ECB/Frankfurter (kur) · Launch Library (fırlatma) · rss2json (haber) · TeleGeography (kablolar).
+  Yalnızca halka açık veri; etik kullanım içindir.
+  <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+    <span class="madalyon" style="width:26px;height:26px;flex:0 0 26px"><img src="foto/ustad-kenan.jpg" alt="Kenan Kuzucu"></span>
+    <span style="color:var(--yazi2);font-size:10px;letter-spacing:1.5px">ÜSTAD KENAN KUZUCU · <span style="color:var(--ana2)">ÜSTAD MONİTÖR</span> · v5.5</span>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="kablolar.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<script src="statik-veri.js"></script>
+<script src="ek-veri.js"></script>
+<script src="veri/portlar.js"></script>
+<script src="giris.js"></script>
+<script>
+/* ===== yardimcilar ===== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function satir(k,v){ return '<tr><td class="k">'+esc(k)+'</td><td class="v">'+v+'</td></tr>'; }
+function fetchJSON(url, timeout, ekstra){
+  return new Promise(function(res, rej){
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var t = setTimeout(function(){ if(ctl) ctl.abort(); rej(new Error('zaman aşımı')); }, timeout||20000);
+    var opt = { headers:{'Accept':'application/json'} };
+    if(ekstra && ekstra.headers){ for(var hk in ekstra.headers){ opt.headers[hk]=ekstra.headers[hk]; } }
+    if(ctl) opt.signal = ctl.signal;
+    fetch(url, opt).then(function(r){ clearTimeout(t); if(!r.ok){ rej(new Error('HTTP '+r.status)); return; } return r.text(); })
+      .then(function(txt){ if(txt===undefined) return; try{ res(JSON.parse(txt)); }catch(e){ res(txt); } })
+      .catch(function(e){ clearTimeout(t); rej(e); });
+  });
+}
+function durum(alan, txt){ var d=$('durum_'+alan); if(d) d.textContent=txt; }
+function sonucHata(alan, txt){ $('sonuc_'+alan).innerHTML='<div class="hata">'+esc(txt)+'</div>'; durum(alan,''); }
+
+/* ===== navigasyon ===== */
+var AKTIF='harita';
+function git(id){
+  AKTIF=id;
+  if(id!=='harita'){ haritaDurdur(); }
+  var u=document.querySelectorAll('#ustNav a[data-git]');
+  for(var i=0;i<u.length;i++){ u[i].className = (u[i].getAttribute('data-git')===id ? 'aktif' : ''); }
+  var html='';
+  if(id==='harita'){
+    html='<h2 class="panelBaslik">🌍 CANLI DÜNYA — 3D KÜRE</h2>'
+      +'<div class="haritaUst">'
+        +'<button class="modBtn aktif" id="btn3d" onclick="modSec(\'3d\')">3D KÜRE</button>'
+        +'<button class="modBtn" id="btn4d" onclick="modSec(\'4d\')">4D SİNEMA</button>'
+        +'<button class="modBtn" id="btn2d" onclick="modSec(\'2d\')">2D HARİTA</button>'
+        +'<span class="soluk" style="font-size:10px">● döner · simgeye tıkla → yakınlaş</span>'
+      +'</div>'
+      +'<div id="ekAraclar"></div>'
+      +'<div id="aracCubugu" class="aracCubugu"></div>'
+      +'<div class="haritaDuzen">'
+        +'<aside id="piyasaKutu" class="piyasaKutu"></aside>'
+        +'<aside id="ustadTvKutu" class="ustadTvKutu"></aside>'
+        +'<div id="haritaKutu">'
+          +'<div id="kure"></div>'
+          +'<div id="harita" style="display:none"></div>'
+          +'<div class="kimlik"><span class="km"><img src="foto/ustad-kenan.jpg" alt="Üstad Kenan Kuzucu"></span><span class="ky"><span class="kad">ÜSTAD KENAN KUZUCU</span><span class="kun">KURUCU · GAZİANTEP</span></span></div>'
+          +'<div class="harita-not">DEPREM ● YANGIN ● AFET ● SİKLON ● VOLKAN ● GEMİ ● UÇAK ● UYDU ● AURORA ● HAVA ● GÜNEŞ ● ISS</div>'
+          +'<div class="harita-kontrol"><button class="buton" style="margin:0" onclick="kabloAcKapat()" id="kabloBtn">KABLOLAR: KAPALI (2D)</button></div>'
+        +'</div>'
+        +'<aside id="yanPanel">'
+          +'<div id="katPanel"></div>'
+          +'<div class="yanBaslik">📡 HABER AKIŞI</div>'
+          +'<div class="newsTab"><button id="ntDunya" class="aktif" onclick="yanHaberCek(\'dunya\')">DÜNYA</button><button id="ntTurkiye" onclick="yanHaberCek(\'turkiye\')">TÜRKİYE</button><button id="ntNasa" onclick="yanHaberCek(\'nasa\')">NASA</button></div>'
+          +'<div id="yanHaberler" class="yanHaberler"><div class="soluk" style="padding:8px">yükleniyor…</div></div>'
+          +'<div class="lejant">'
+            +'<span><i style="background:#ff5a1f"></i>Yangın</span>'
+            +'<span><i style="background:#3b82f6"></i>Sel</span>'
+            +'<span><i style="background:#a855f7"></i>Fırtına/Siklon</span>'
+            +'<span><i style="background:#b45309"></i>Yanardağ</span>'
+            +'<span><i style="background:#eab308"></i>Deprem</span>'
+            +'<span><i style="background:#4ade80"></i>ISS</span>'
+            +'<span><i style="background:#38bdf8"></i>Uçak</span>'
+            +'<span><i style="background:#2dd4bf"></i>Gemi</span>'
+            +'<span><i style="background:#c4b5fd"></i>Uydu</span>'
+            +'<span><i style="background:#22d3ee"></i>Aurora</span>'
+            +'<span><i style="background:#ef4444"></i>GDACS afet</span>'
+            +'<span><i style="background:#fde68a"></i>Sıcaklık</span>'
+            +'<span><i style="background:#e5e7eb"></i>Gece/Gündüz</span>'
+          +'</div>'
+          +'<div class="ucusAyar"><span class="soluk" style="font-size:10px;line-height:1.5;flex:1 1 100%">CANLI UÇAKLAR (sivil + askerî) için paneli <b>USTAD-MONITOR-UCAKLI.bat</b> ile aç (CORS serbest, hesapsız). Çift tıklamayla açılışta uçaklar ve askerî uçaklar görünmez.</span><button onclick="ucusBaslat();if(typeof askeriUcakYukle===\'function\'){askeriUcakYukle();}">YENİDEN DENE</button></div>'
+        +'</aside>'
+      +'</div>'
+      +'<div class="durum" id="durum_harita"></div>';
+  } else if(id==='haber'){
+    html='<h2 class="panelBaslik">📡 HABER AKIŞI (THE WIRE)</h2>'
+      +'<div class="durum" id="durum_haber"></div><div class="sonuc" id="sonuc_haber"></div>';
+  } else if(id==='piyasa'){
+    html='<h2 class="panelBaslik">📈 PİYASA (KRİPTO + KUR)</h2>'
+      +'<div class="durum" id="durum_piyasa"></div><div class="sonuc" id="sonuc_piyasa"></div>';
+  } else if(id==='deprem'){
+    html='<h2 class="panelBaslik">🌍 SON DEPREMLER (M 4.5+)</h2>'
+      +'<div class="durum" id="durum_deprem"></div><div class="sonuc" id="sonuc_deprem"></div>';
+  } else if(id==='yangin'){
+    html='<h2 class="panelBaslik">🔥 DOĞAL OLAYLAR / YANGIN</h2>'
+      +'<div class="durum" id="durum_yangin"></div><div class="sonuc" id="sonuc_yangin"></div>';
+  } else if(id==='iss'){
+    html='<h2 class="panelBaslik">🛰️ ULUSLARARASI UZAY İSTASYONU (ISS)</h2>'
+      +'<div class="durum" id="durum_iss"></div><div class="sonuc" id="sonuc_iss"></div>';
+  } else if(id==='firlatma'){
+    html='<h2 class="panelBaslik">🚀 YAKLAŞAN UZAY FIRLATMALARI</h2>'
+      +'<div class="durum" id="durum_firlatma"></div><div class="sonuc" id="sonuc_firlatma"></div>';
+  } else if(id==='uydular'){
+    html='<h2 class="panelBaslik">🛰️ UYDULAR / YÖRÜNGE</h2>'
+      +'<div class="durum" id="durum_uydular"></div><div class="sonuc" id="sonuc_uydular"></div>';
+  } else if(id==='kaynaklar'){
+    html='<h2 class="panelBaslik">📚 KAYNAK KATALOĞU</h2><div class="sonuc" id="sonuc_kaynaklar">'+kaynaklarHTML()+'</div>';
+  } else if(id==='diger'){
+    html='<h2 class="panelBaslik">🧩 DİĞER GÖSTERGELER</h2>'
+      +'<div class="sonuc" id="sonuc_diger">'+digerHTML()+'</div>';
+  } else {
+    var ozel = (typeof ozelPanelHTML==='function') ? ozelPanelHTML(id) : null;
+    if(ozel) html=ozel;
+  }
+  $('icerik').innerHTML=html;
+  if(typeof ozelPanelYukle==='function' && $('durum_'+id)){ ozelPanelYukle(id); }
+  if(id==='harita'){ setTimeout(function(){ modSec('3d'); katPanelOlustur(); yanHaberCek('dunya'); if(typeof tvKur==='function') tvKur(); if(typeof piyasaKur==='function') piyasaKur(); }, 90); }
+  else if(id==='haber'){ haberCek(); }
+  else if(id==='piyasa'){ piyasaCek(); }
+  else if(id==='deprem'){ depremCek(); }
+  else if(id==='yangin'){ yanginCek(); }
+  else if(id==='iss'){ issCek(); }
+  else if(id==='firlatma'){ firlatmaCek(); }
+  else if(id==='uydular'){ uyduCek(); }
+}
+
+/* ===== HARITA (Leaflet) ===== */
+var HARITA=null, ISS_MARK=null, ISS_TICK=null, DEPREM_KAT=null, YANGIN_KAT=null, KABLO_KAT=null;
+function haritaDurdur(){
+  if(ISS_TICK){ clearInterval(ISS_TICK); ISS_TICK=null; }
+  if(ISS_KTICK){ clearInterval(ISS_KTICK); ISS_KTICK=null; }
+  if(UCUS_TICK){ clearInterval(UCUS_TICK); UCUS_TICK=null; }
+  if(HARITA){ try{ HARITA.remove(); }catch(e){} HARITA=null; ISS_MARK=null; DEPREM_KAT=null; YANGIN_KAT=null; KABLO_KAT=null; }
+  if(KURE){ try{ var kk=$('kure'); if(kk) kk.innerHTML=''; }catch(e){} KURE=null; KURE_YUK=false; ISS_KURE=null; }
+}
+function haritaBaslat(){
+  if(typeof L==='undefined'){ durum('harita','Harita kütüphanesi (Leaflet) yüklenemedi — internet/CDN erişimi gerekli.'); return; }
+  if(!HARITA){
+    HARITA=L.map('harita',{ center:[22,10], zoom:2, minZoom:2, worldCopyJump:true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+      { attribution:'© OpenStreetMap · © CARTO', subdomains:'abcd', maxZoom:19 }).addTo(HARITA);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',
+      { subdomains:'abcd', maxZoom:19, pane:'shadowPane' }).addTo(HARITA);
+  } else { setTimeout(function(){ HARITA.invalidateSize(); },50); }
+  depremHaritaCek();
+  yanginHaritaCek();
+  issHaritaBaslat();
+  if(typeof karolarKur==='function'){ setTimeout(karolarKur, 400); }
+}
+function depremHaritaCek(){
+  durum('harita','Deprem verisi çekiliyor…');
+  fetchJSON('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=4.5&orderby=time&limit=100', 20000).then(function(d){
+    if(DEPREM_KAT && HARITA){ HARITA.removeLayer(DEPREM_KAT); }
+    DEPREM_KAT=L.layerGroup().addTo(HARITA);
+    if(d && d.features){
+      for(var i=0;i<d.features.length;i++){
+        var f=d.features[i], p=f.geometry.coordinates, m=f.properties.mag;
+        var renk = m>=6 ? '#ff3b3b' : (m>=5 ? '#ff8c1a' : (m>=4.5 ? '#facc15' : '#4ade80'));
+        L.circleMarker([p[1],p[0]],{ radius: m>=6?9:(m>=5?7:5), color:renk, weight:1.5, fillColor:renk, fillOpacity:.7 })
+          .bindPopup('<b>M '+m+'</b><br>'+esc(f.properties.place||'')+'<br>'+new Date(f.properties.time).toLocaleString('tr-TR'))
+          .addTo(DEPREM_KAT);
+      }
+      durum('harita','✔ '+d.features.length+' deprem işaretlendi · ISS canlı');
+    } else durum('harita','Deprem verisi boş.');
+  }).catch(function(e){ durum('harita','Deprem verisi alınamadı: '+e.message); });
+}
+function issHaritaBaslat(){
+  if(ISS_TICK) return;
+  function tik(){
+    fetchJSON('https://api.wheretheiss.at/v1/satellites/25544', 15000).then(function(d){
+      if(!HARITA) return;
+      var ikon=L.divIcon({className:'', html:'<div class="iss-nokta"></div>', iconSize:[14,14], iconAnchor:[7,7]});
+      if(ISS_MARK){ ISS_MARK.setLatLng([d.latitude,d.longitude]); }
+      else { ISS_MARK=L.marker([d.latitude,d.longitude],{icon:ikon}).addTo(HARITA).bindPopup('ISS (canlı)'); }
+    }).catch(function(){});
+  }
+  tik();
+  ISS_TICK=setInterval(tik, 10000);
+}
+
+
+function yanginHaritaCek(){
+  fetchJSON('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=100', 20000).then(function(d){
+    if(!d || !d.events || !HARITA) return;
+    if(YANGIN_KAT){ HARITA.removeLayer(YANGIN_KAT); }
+    YANGIN_KAT=L.layerGroup().addTo(HARITA);
+    for(var i=0;i<d.events.length;i++){
+      var e=d.events[i], kat=[];
+      for(var c=0;c<e.categories.length;c++) kat.push(e.categories[c].title);
+      if(kat.indexOf('Wildfires')<0) continue;
+      if(!e.geometry || !e.geometry.length) continue;
+      var g=e.geometry[0], latlng=null;
+      if(g.type==='Point') latlng=[g.coordinates[1],g.coordinates[0]];
+      else if(g.type==='Polygon' && g.coordinates && g.coordinates[0] && g.coordinates[0][0]) latlng=[g.coordinates[0][0][1],g.coordinates[0][0][0]];
+      if(!latlng) continue;
+      L.circleMarker(latlng,{radius:6,color:'#ff6b1a',weight:1.5,fillColor:'#ff6b1a',fillOpacity:.55})
+        .bindPopup('<b>🔥 '+esc(e.title)+'</b>').addTo(YANGIN_KAT);
+    }
+  }).catch(function(){});
+}
+function kabloAcKapat(){
+  if(!HARITA || !window.KABLOLAR) return;
+  if(KABLO_KAT){ HARITA.removeLayer(KABLO_KAT); KABLO_KAT=null; $('kabloBtn').textContent='KABLOLAR: KAPALI'; return; }
+  KABLO_KAT=L.layerGroup().addTo(HARITA);
+  $('kabloBtn').textContent='KABLOLAR: ÇİZİLİYOR…';
+  setTimeout(function(){
+    for(var i=0;i<KABLOLAR.length;i++){
+      var kk=KABLOLAR[i], renk=kk[1]||'#2dd4bf', cizgiler=kk[2];
+      for(var j=0;j<cizgiler.length;j++){
+        var latlngs=[];
+        for(var p=0;p<cizgiler[j].length;p++) latlngs.push([cizgiler[j][p][1],cizgiler[j][p][0]]);
+        L.polyline(latlngs,{color:renk,weight:0.8,opacity:0.3,interactive:false}).addTo(KABLO_KAT);
+      }
+    }
+    $('kabloBtn').textContent='KABLOLAR: AÇIK ('+KABLOLAR.length+')';
+  }, 30);
+}
+
+/* ===== HABER ===== */
+var HABER_KAYNAKLARI=[
+  ['BBC Dünya','https://feeds.bbci.co.uk/news/world/rss.xml'],
+  ['Al Jazeera','https://www.aljazeera.com/xml/rss/all.xml'],
+  ['DW Dünya','https://rss.dw.com/rdf/rss-en-world'],
+  ['France 24','https://www.france24.com/en/rss'],
+  ['Euronews','https://www.euronews.com/rss?level=theme&name=news'],
+  ['VOA','https://www.voanews.com/api/zq$omekvi_'],
+  ['NPR','https://feeds.npr.org/1001/rss.xml'],
+  ['Guardian Dünya','https://www.theguardian.com/world/rss'],
+  ['TRT World','https://www.trtworld.com/rss.xml']
+];
+function haberCek(){
+  durum('haber','Haber akışları çekiliyor…');
+  var vaatler=HABER_KAYNAKLARI.map(function(k){
+    var url='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(k[1]);
+    return fetchJSON(url, 20000).then(function(d){ return {kaynak:k[0], d:d}; }).catch(function(){ return {kaynak:k[0], d:null}; });
+  });
+  Promise.all(vaatler).then(function(rs){
+    var items=[];
+    for(var i=0;i<rs.length;i++){
+      if(rs[i].d && rs[i].d.items){
+        for(var j=0;j<rs[i].d.items.length;j++){
+          var it=rs[i].d.items[j];
+          items.push({ kaynak:rs[i].kaynak, baslik:it.title||'', link:it.link||'', tarih:it.pubDate||'' });
+        }
+      }
+    }
+    items.sort(function(a,b){ return (Date.parse(b.tarih)||0)-(Date.parse(a.tarih)||0); });
+    var html='<div class="kartListe">';
+    for(var k=0;k<Math.min(items.length,45);k++){
+      var h=items[k];
+      var t=Date.parse(h.tarih) ? new Date(h.tarih).toLocaleString('tr-TR') : '';
+      html+='<a class="haberSatir" style="text-decoration:none" target="_blank" rel="noopener" href="'+esc(h.link)+'">'
+        +'<div class="kaynak">'+esc(h.kaynak)+'</div>'
+        +'<div class="baslik">'+esc(h.baslik)+'</div>'
+        +'<div class="tarih">'+esc(t)+'</div></a>';
+    }
+    html+='</div>';
+    if(!items.length) html='<div class="uyari">Haber akışı alınamadı (rss2json sınırı veya kaynaklar kapalı olabilir).</div>';
+    $('sonuc_haber').innerHTML=html;
+    durum('haber','✔ '+items.length+' haber yüklendi ('+rs.filter(function(r){return r.d;}).length+' kaynak)');
+  });
+}
+
+/* ===== PİYASA ===== */
+function piyasaCek(){
+  durum('piyasa','Kripto ve kur çekiliyor…');
+  var kripto=fetchJSON('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1', 20000).catch(function(){return null;});
+  var kur=fetchJSON('https://api.frankfurter.dev/v1/latest?base=USD&symbols=TRY,EUR,GBP,JPY,CNY,CHF,RUB', 20000).catch(function(){return null;});
+  Promise.all([kripto,kur]).then(function(r){
+    var k=r[0], ku=r[1];
+    var html='<h3 class="soluk" style="font-size:12px;letter-spacing:1px;margin:0 0 8px">KRİPTO (CoinGecko)</h3><table class="tbl">';
+    html+='<tr><td class="k">Kripto</td><td class="v" style="text-align:right">Fiyat (USD)</td><td class="v" style="text-align:right">24s Değişim</td></tr>';
+    if(k){ for(var i=0;i<k.length;i++){
+      var c=k[i]; var deg=c.price_change_percentage_24h||0; var renk=deg>=0?'var(--vurgu)':'var(--hata)'; var ok=deg>=0?'▲':'▼';
+      html+='<tr><td class="k">'+esc(c.name)+' <span class="soluk">'+esc((c.symbol||'').toUpperCase())+'</span></td>'
+        +'<td class="v" style="text-align:right">$'+Number(c.current_price).toLocaleString('en-US',{maximumFractionDigits:2})+'</td>'
+        +'<td class="v" style="text-align:right;color:'+renk+'">'+ok+' '+Math.abs(deg).toFixed(2)+'%</td></tr>';
+    }} else { html+='<tr><td class="v hata">Kripto verisi alınamadı.</td></tr>'; }
+    html+='</table>';
+    html+='<h3 class="soluk" style="font-size:12px;letter-spacing:1px;margin:16px 0 8px">DÖVİZ (1 USD karşılığı · ECB)</h3><table class="tbl">';
+    if(ku && ku.rates){ var adlar={'TRY':'₺ Türk Lirası','EUR':'€ Euro','GBP':'£ Sterlin','JPY':'¥ Yen','CNY':'¥ Yuan','CHF':'Fr İsviçre','RUB':'₽ Ruble'};
+      var kodlar=Object.keys(ku.rates);
+      for(var j=0;j<kodlar.length;j++){ var kod=kodlar[j]; html+='<tr><td class="k">'+esc(adlar[kod]||kod)+'</td><td class="v">'+Number(ku.rates[kod]).toFixed(4)+'</td></tr>'; }
+    } else { html+='<tr><td class="v hata">Kur verisi alınamadı.</td></tr>'; }
+    html+='</table><div class="uyari">Gerçek zamanlı borsa endeksleri (S&P500, BIST…) tarayıcıdan ücretsiz/anahtarsız çekilemiyor; v2 arka uçta eklenebilir. Kripto ve kur canlıdır.</div>';
+    $('sonuc_piyasa').innerHTML=html;
+    durum('piyasa','✔ Piyasa verisi yüklendi');
+  });
+}
+
+/* ===== DEPREM ===== */
+function depremRengi(m){ return m>=6?'#ff3b3b':(m>=5?'#ff8c1a':(m>=4.5?'#facc15':'#4ade80')); }
+function depremCek(){
+  durum('deprem','USGS verisi çekiliyor…');
+  fetchJSON('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=4.5&orderby=time&limit=25', 20000).then(function(d){
+    if(!d || !d.features){ sonucHata('deprem','Deprem verisi alınamadı.'); return; }
+    var html='<div class="kartListe">';
+    for(var i=0;i<d.features.length;i++){
+      var f=d.features[i], m=f.properties.mag, yer=f.properties.place||'', t=new Date(f.properties.time).toLocaleString('tr-TR');
+      var derinlik=f.geometry.coordinates[2]||0;
+      html+='<div class="depremSatir"><span class="magRozet" style="background:'+depremRengi(m)+';color:#000">'+m.toFixed(1)+'</span>'
+        +'<div><div class="yer">'+esc(yer)+'</div><div class="zaman">'+esc(t)+' · derinlik '+derinlik.toFixed(0)+' km</div></div></div>';
+    }
+    html+='</div>';
+    $('sonuc_deprem').innerHTML=html;
+    durum('deprem','✔ '+d.features.length+' deprem (M 4.5+)');
+  }).catch(function(e){ sonucHata('deprem','Deprem verisi alınamadı: '+e.message); });
+}
+
+/* ===== ISS ===== */
+function issCek(){
+  durum('iss','ISS konumu çekiliyor…');
+  fetchJSON('https://api.wheretheiss.at/v1/satellites/25544', 15000).then(function(d){
+    var rows='';
+    rows+=satir('Enlem', d.latitude.toFixed(4));
+    rows+=satir('Boylam', d.longitude.toFixed(4));
+    rows+=satir('Yükseklik', Number(d.altitude).toFixed(1)+' km');
+    rows+=satir('Hız', Number(d.velocity).toFixed(0)+' km/sa');
+    rows+=satir('Görünürlük', d.visibility||'-');
+    rows+=satir('Zaman', new Date(d.timestamp*1000).toLocaleString('tr-TR'));
+    var harita='<p><a class="buton" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat='+d.latitude+'&mlon='+d.longitude+'#map=4/'+d.latitude+'/'+d.longitude+'">HARİTADA AÇ</a></p>';
+    $('sonuc_iss').innerHTML='<table class="tbl">'+rows+'</table>'+harita;
+    durum('iss','✔ Canlı ISS konumu');
+  }).catch(function(e){ sonucHata('iss','ISS verisi alınamadı: '+e.message); });
+}
+
+
+function yanginCek(){
+  durum('yangin','NASA EONET verisi çekiliyor…');
+  fetchJSON('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=50', 20000).then(function(d){
+    if(!d || !d.events){ sonucHata('yangin','Veri alınamadı.'); return; }
+    var ilgi=['Wildfires','Severe Storms','Volcanoes','Floods','Drought','Landslides'];
+    var trAd={'Wildfires':'YANGIN','Severe Storms':'ŞİDDETLİ FIRTINA','Volcanoes':'YANARDAĞ','Floods':'SEL','Drought':'KURAKLIK','Landslides':'HEYELAN'};
+    var html='<div class="kartListe">'; var sayac=0;
+    for(var i=0;i<d.events.length;i++){
+      var e=d.events[i], kat=[];
+      for(var c=0;c<e.categories.length;c++) kat.push(e.categories[c].title);
+      var bulunan=null;
+      for(var j=0;j<ilgi.length;j++){ if(kat.indexOf(ilgi[j])>=0){ bulunan=ilgi[j]; break; } }
+      if(!bulunan) continue;
+      sayac++;
+      var tarih=(e.geometry && e.geometry.length && e.geometry[0].date)?new Date(e.geometry[0].date).toLocaleString('tr-TR'):'';
+      html+='<div class="haberSatir"><div class="kaynak">'+esc(trAd[bulunan]||bulunan)+'</div>'
+        +'<div class="baslik">'+esc(e.title)+'</div>'
+        +'<div class="tarih">'+esc(tarih)+'</div></div>';
+    }
+    if(!sayac) html='<div class="uyari">Şu an açık eşleşen doğal olay yok.</div>';
+    html+='</div><div class="uyari">Kaynak: NASA EONET. Yangın, fırtına, yanardağ, sel, kuraklık ve heyelanı kapsar.</div>';
+    $('sonuc_yangin').innerHTML=html;
+    durum('yangin','✔ '+sayac+' açık olay');
+  }).catch(function(e){ sonucHata('yangin','Veri alınamadı: '+e.message); });
+}
+
+/* ===== FIRLATMA ===== */
+function firlatmaCek(){
+  durum('firlatma','Fırlatma takvimi çekiliyor…');
+  fetchJSON('https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=12', 20000).then(function(d){
+    if(!d || !d.results){ sonucHata('firlatma','Fırlatma verisi alınamadı.'); return; }
+    var html='<div class="kartListe">';
+    for(var i=0;i<d.results.length;i++){
+      var l=d.results[i];
+      var t=Date.parse(l.net) ? new Date(l.net).toLocaleString('tr-TR') : (l.net||'');
+      var yer=(l.pad && l.pad.location && l.pad.location.name) ? l.pad.location.name : '-';
+      html+='<div class="haberSatir"><div class="kaynak">'+esc(l.name||'')+'</div>'
+        +'<div class="baslik">'+esc(yer)+' · '+esc((l.rocket&&l.rocket.configuration&&l.rocket.configuration.name)||'')+'</div>'
+        +'<div class="tarih">'+esc(t)+'</div></div>';
+    }
+    html+='</div>';
+    $('sonuc_firlatma').innerHTML=html;
+    durum('firlatma','✔ '+d.results.length+' yaklaşan fırlatma');
+  }).catch(function(e){ sonucHata('firlatma','Fırlatma verisi alınamadı: '+e.message); });
+}
+
+/* ===== DİĞER (bağlantılar) ===== */
+function digerHTML(){
+  var kartlar=[
+    ['DEFCON Seviyesi','ABD savunma hazırlık seviyesi. Tarayıcıdan canlı API CORS kapalı; resmî siteye bağlan.','https://www.defconlevel.com/'],
+    ['Tahmin Piyasaları','Polymarket gibi tahmin piyasaları — tarayıcıdan doğrudan çekilemiyor.','https://polymarket.com/'],
+    ['Canlı Uçuşlar','FlightRadar24 / OpenSky. Gerçek zamanlı uçuş verisi anahtar/arka uç ister.','https://www.flightradar24.com/'],
+    ['Deniz Trafiği','MarineTraffic / AISStream. Canlı gemi verisi API anahtarı ister.','https://www.marinetraffic.com/'],
+    ['Salgın İzleme','WHO ve ProMED hastalık salgın bültenleri.','https://www.who.int/emergencies/disease-outbreak-news'],
+    ['İnternet Kesintileri','Cloudflare Radar / Downdetector — bölgesel internet kesintisi ve çökme izleme.','https://radar.cloudflare.com/outage-center'],
+    ['Canlı Kameralar','EarthCam / Windy gibi canlı yayın görüntüleri.','https://www.earthcam.com/']
+  ];
+  var html='<div class="linkIzgara">';
+  for(var i=0;i<kartlar.length;i++){
+    html+='<div class="linkKart"><div class="lkAd">'+esc(kartlar[i][0])+'</div>'
+      +'<div class="lkNot">'+esc(kartlar[i][1])+'</div>'
+      +'<a class="buton" target="_blank" rel="noopener" href="'+esc(kartlar[i][2])+'">KAYNAĞA GİT →</a></div>';
+  }
+  html+='</div>';
+  if(typeof iptvHTML==='function'){ html+=iptvHTML(); }
+  if(typeof belgeHTML==='function'){ html+=belgeHTML(); }
+  if(typeof sifreHTML==='function'){ html+=sifreHTML(); }
+  if(typeof egitimHTML==='function'){ html+=egitimHTML(); }
+  html+='<div class="uyari">Bu bölümdeki veriler tarayıcıdan ücretsiz/anahtarsız canlı çekilemediği için kaynağa bağlantı olarak verildi. Uçuş, gemi, tahmin piyasası ve gerçek zamanlı borsa v2\u2019de Python arka uçla eklenebilir.</div>';
+  setTimeout(function(){ if(typeof iptvKur==='function'){ iptvKur(); } }, 0);
+  setTimeout(function(){ if(typeof kasaKur3==='function'){ kasaKur3(); } }, 30);
+  return html;
+}
+
+
+function uyduCek(){
+  durum('uydular','CelesTrak verisi çekiliyor…');
+  var aktif=fetchJSON('https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=json', 30000).catch(function(){return null;});
+  var istasyon=fetchJSON('https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=json', 30000).catch(function(){return null;});
+  Promise.all([aktif,istasyon]).then(function(r){
+    var a=r[0], st=r[1];
+    var html='<table class="tbl">'+satir('Aktif Uydu Sayısı', a? a.length : 'alınamadı')+'</table>';
+    if(st && st.length){
+      html+='<h3 class="soluk" style="font-size:12px;letter-spacing:1px;margin:16px 0 8px">UZAY İSTASYONLARI</h3><table class="tbl">';
+      html+='<tr><td class="k">İstasyon</td><td class="v">Periyot (dk)</td><td class="v">Eğim (°)</td><td class="v">Yükseklik (km)</td></tr>';
+      for(var i=0;i<st.length;i++){
+        var u=st[i];
+        html+='<tr><td class="k">'+esc(u.OBJECT_NAME||'-')+'</td>'
+          +'<td class="v">'+(u.MEAN_MOTION? (1440/u.MEAN_MOTION).toFixed(1):'-')+'</td>'
+          +'<td class="v">'+(u.INCLINATION? u.INCLINATION.toFixed(1):'-')+'</td>'
+          +'<td class="v">'+(u.APOAPSIS&&u.PERIAPSIS? (((u.APOAPSIS+u.PERIAPSIS)/2).toFixed(0)):'-')+'</td></tr>';
+      }
+      html+='</table>';
+    }
+    html+='<div class="uyari">Kaynak: CelesTrak (NORAD TLE). Aktif uydu sayısı ve uzay istasyonu yörünge verileri canlı çekilir. ISS ayrıca HARİTA bölümünde canlı nokta olarak gösterilir.</div>';
+    $('sonuc_uydular').innerHTML=html;
+    durum('uydular','✔ Uydu verisi yüklendi');
+  });
+}
+
+var KAYNAKLAR=[
+ {ad:'Geopolitik & Çatışma', sayi:'41', aciklama:'Çatışma olayları, protestolar, yerinden edilme, seyahat uyarıları, roket alarmları.', k:[['ACLED','https://acleddata.com/',0],['UCDP','https://ucdp.uu.se/',0],['GDELT','https://www.gdeltproject.org/',0],['UN OCHA HAPI','https://hapi-humdata.org/',0]]},
+ {ad:'Askerî & Stratejik', sayi:'21', aciklama:'Askerî üsler, canlı ADS-B askerî uçuşlar, deniz hareketleri, izlenen uydular, GPS karıştırma.', k:[['adsb.lol','https://adsb.lol/',0],['Wingbits','https://wingbits.com/',0],['CelesTrak','https://celestrak.org/',1],['GPSJam','https://gpsjam.org/',0]]},
+ {ad:'Haber & OSINT', sayi:'464', aciklama:'Katmanlı haber akışları, Telegram OSINT hattı, canlı TV ve webcam.', k:[['Reuters','https://www.reuters.com/',0],['BBC','https://www.bbc.com/news',1],['AP','https://apnews.com/',0],['Al Jazeera','https://www.aljazeera.com/',1]]},
+ {ad:'Finans & Ekonomi', sayi:'48', aciklama:'Merkez bankası ve istatistik kurumu makro serileri, canlı piyasa ve kripto, ticaret akışları.', k:[['FRED','https://fred.stlouisfed.org/',0],['ECB','https://www.ecb.europa.eu/',1],['BIS','https://www.bis.org/',0],['Eurostat','https://ec.europa.eu/eurostat',0]]},
+ {ad:'Enerji & Emtia', sayi:'23', aciklama:'AB gaz depolama, ABD ham petrol stokları, IEA petrol stokları, altın rezervleri, yakıt fiyatları.', k:[['GIE AGSI+','https://agsi.gie.eu/',0],['U.S. EIA','https://www.eia.gov/',0],['IEA','https://www.iea.org/',0],['CFTC','https://www.cftc.gov/',0]]},
+ {ad:'Altyapı & Siber', sayi:'52', aciklama:'Denizaltı kabloları, boru hatları, stratejik limanlar, yapay zekâ veri merkezleri, internet kesintileri, tehdit istihbaratı.', k:[['Cloudflare Radar','https://radar.cloudflare.com/',0],['Submarine Cable Map','https://www.submarinecablemap.com/',1],['abuse.ch','https://abuse.ch/',0],['AbuseIPDB','https://www.abuseipdb.com/',0]]},
+ {ad:'Çevre & Afet', sayi:'43', aciklama:'Depremler, afet uyarıları, uydu yangın tespiti, Pasifik kasırgaları, iklim anomalileri.', k:[['USGS','https://earthquake.usgs.gov/',1],['GDACS','https://www.gdacs.org/',0],['NASA FIRMS','https://firms.modaps.eosdis.nasa.gov/',0],['NASA EONET','https://eonet.gsfc.nasa.gov/',1]]},
+ {ad:'Havacılık & Hava Sahası', sayi:'14', aciklama:'115 havalimanı rötar ve NOTAM kapanma tespiti, canlı uçuş takibi, havayolu operasyonları.', k:[['FAA','https://www.faa.gov/',0],['ICAO','https://www.icao.int/',0],['AviationStack','https://aviationstack.com/',0],['adsb.lol','https://adsb.lol/',0]]},
+ {ad:'Çin Kapsamı', sayi:'12', aciklama:'Çin makro verileri: NBS, SAFE, PBOC, SSE/SZSE.', k:[['NBS','http://www.stats.gov.cn/',0],['SAFE','https://www.safe.gov.cn/',0],['PBOC','http://www.pbc.gov.cn/',0],['SSE / SZSE','https://www.sse.com.cn/',0]]},
+ {ad:'Teknoloji Ekosistemi', sayi:'30', aciklama:'Şirket merkezleri, girişim merkezleri, bulut bölgeleri, hızlandırıcılar, araştırma sinyalleri.', k:[['Crunchbase','https://www.crunchbase.com/',0],['GitHub','https://github.com/',0],['OSS Insight','https://ossinsight.io/',0],['Product Hunt','https://www.producthunt.com/',0]]}
+];
+function kaynaklarHTML(){
+  var html='<div class="uyari">Katalog, worldmonitor.app\u2019in "Data Source Catalog" (748 sağlayıcı · 761 kaynak ana bilgisayarı · 10 alan) listesinden derlendi. <span style="color:var(--vurgu)">●</span> = bu panelde canlı/entegre çalışan kaynak; diğerleri kaynağa bağlantıdır.</div><div class="linkIzgara">';
+  if(typeof siberKaynaklarHTML==='function'){
+    html='<h3 class="panelBaslik" style="font-size:13px;margin-top:0">🛡️ ÜSTAD SİBER KAYNAK KÜTÜPHANESİ · 6 KATEGORİ / 54 KAYNAK</h3>'
+      +'<div class="uyari">Aşağıdaki kaynaklar senin verdiğin listedir. Her kaynağın yanındaki etiket, verinin nasıl alındığını dürüstçe söyler: '
+      +'<span style="color:var(--vurgu)">CANLI ÇEKİLİYOR</span> (doğrudan) · <span style="color:#7dd3fc">BESLEME</span> (vekil ile) · '
+      +'<span style="color:#fbbf24">ANAHTAR GEREKİR</span> · <span style="color:var(--yazi2)">BAĞLANTI</span> (canlı çekilemiyor). '
+      +'Canlı IOC akışı için <b>SİBER TEHDİT</b> sekmesine bak.</div>'
+      +siberKaynaklarHTML()
+      +'<h3 class="panelBaslik" style="font-size:13px;margin-top:16px">🌐 DÜNYA MONİTÖR KATALOĞU (worldmonitor.app)</h3>'
+      +html;
+  }
+  for(var i=0;i<KAYNAKLAR.length;i++){
+    var d=KAYNAKLAR[i];
+    html+='<div class="linkKart"><div class="lkAd">'+esc(d.ad)+' <span class="soluk" style="font-size:10px">('+d.sayi+')</span></div>'
+      +'<div class="lkNot">'+esc(d.aciklama)+'</div><div class="linkListe">';
+    for(var j=0;j<d.k.length;j++){
+      var kk=d.k[j];
+      html+='<a class="buton kucuk" target="_blank" rel="noopener" href="'+esc(kk[1])+'">'+esc(kk[0])+(kk[2]?' <span style="color:var(--vurgu)">●</span>':'')+'</a>';
+    }
+    html+='</div></div>';
+  }
+  html+='</div><div class="uyari">Panelde canlı kullanılan ücretsiz API\u2019ler: USGS (deprem) · NASA EONET (yangın/afet) · CelesTrak (uydu) · wheretheiss.at (ISS) · CoinGecko (kripto) · ECB/Frankfurter (kur) · Launch Library (fırlatma) · rss2json (haber) · TeleGeography (denizaltı kabloları).</div>';
+  return html;
+}
+
+
+
+/* ===== STATİK KATMAN VERİLERİ (halka açık bilinen tesisler) ===== */
+var VERI_ASKERI=[[49.44,7.60,'Ramstein Hava Üssü · Almanya'],[37.00,35.42,'İncirlik Hava Üssü · Türkiye'],[26.36,127.77,'Kadena Hava Üssü · Japonya'],[13.58,144.92,'Andersen Üssü · Guam'],[21.35,-157.95,'Pearl Harbor · ABD'],[36.95,-76.30,'Norfolk Donanma Üssü · ABD'],[25.12,51.32,'Al Udeid Üssü · Katar'],[24.25,54.55,'Al Dhafra Üssü · BAE'],[11.55,43.15,'Camp Lemonnier · Cibuti'],[35.53,24.15,'Souda Bay · Yunanistan'],[36.64,-6.35,'Rota Üssü · İspanya'],[46.03,12.60,'Aviano Üssü · İtalya'],[37.40,14.92,'Sigonella · İtalya'],[76.53,-68.70,'Thule Üssü · Grönland'],[38.76,-27.09,'Lajes · Azorlar'],[-7.31,72.41,'Diego Garcia · Hint Okyanusu'],[19.90,-75.10,'Guantanamo · Küba'],[26.21,50.61,'Bahreyn Donanma Üssü'],[35.29,139.67,'Yokosuka · Japonya'],[32.70,-117.18,'San Diego Donanma Üssü · ABD'],[36.07,120.38,'Qingdao Donanma Üssü · Çin'],[44.62,33.53,'Sevastopol · Kırım'],[34.90,35.87,'Tartus · Suriye'],[43.12,131.89,'Vladivostok · Rusya'],[35.40,35.95,'Hmeimim · Suriye']];
+var VERI_NUKLEER=[[51.39,30.10,'Çernobil · Ukrayna'],[47.51,34.59,'Zaporijya · Ukrayna'],[37.42,141.03,'Fukuşima Daiichi · Japonya'],[37.43,138.60,'Kashiwazaki-Kariwa · Japonya'],[44.33,-81.60,'Bruce · Kanada'],[43.81,-79.07,'Pickering · Kanada'],[49.42,6.22,'Cattenom · Fransa'],[51.01,2.14,'Gravelines · Fransa'],[49.86,0.63,'Paluel · Fransa'],[61.24,21.44,'Olkiluoto · Finlandiya'],[60.40,18.17,'Forsmark · İsveç'],[33.39,-112.86,'Palo Verde · ABD'],[35.21,-120.86,'Diablo Canyon · ABD'],[40.15,-76.72,'Three Mile Island · ABD'],[23.97,52.29,'Barakah · BAE'],[8.17,77.71,'Kudankulam · Hindistan'],[34.69,119.46,'Tianwan · Çin'],[39.80,121.48,'Hongyanhe · Çin'],[35.32,129.30,'Shin-Kori · G. Kore'],[36.14,33.54,'Akkuyu · Türkiye'],[56.84,61.32,'Beloyarsk · Rusya'],[51.27,39.20,'Novovoronej · Rusya'],[28.83,50.89,'Buşehr · İran'],[-33.68,18.43,'Koeberg · G. Afrika'],[-23.01,-44.46,'Angra · Brezilya']];
+var VERI_UZAY=[[28.47,-80.57,'Cape Canaveral / KSC · ABD'],[34.63,-120.61,'Vandenberg · ABD'],[25.99,-97.15,'Starbase Boca Chica · ABD'],[37.94,-75.47,'Wallops · ABD'],[45.96,63.31,'Baykonur · Kazakistan'],[62.93,40.58,'Plesetsk · Rusya'],[51.88,128.33,'Vostoçni · Rusya'],[5.24,-52.77,'Kourou · Fransız Guyanası'],[40.96,100.29,'Jiuquan · Çin'],[28.25,102.03,'Xichang · Çin'],[19.61,110.95,'Wenchang · Çin'],[38.85,111.61,'Taiyuan · Çin'],[30.40,130.97,'Tanegashima · Japonya'],[13.72,80.23,'Sriharikota · Hindistan'],[35.23,53.92,'Semnan · İran'],[34.43,127.53,'Naro · G. Kore'],[-2.37,-44.40,'Alcântara · Brezilya'],[57.44,-152.34,'Kodiak · ABD']];
+var VERI_EKONOMI=[[40.71,-74.01,'New York · ABD'],[51.51,-0.13,'Londra · İngiltere'],[35.68,139.69,'Tokyo · Japonya'],[22.32,114.17,'Hong Kong'],[1.35,103.82,'Singapur'],[31.23,121.47,'Şanghay · Çin'],[50.11,8.68,'Frankfurt · Almanya'],[47.37,8.54,'Zürih · İsviçre'],[48.86,2.35,'Paris · Fransa'],[25.20,55.27,'Dubai · BAE'],[-33.87,151.21,'Sydney · Avustralya'],[19.08,72.88,'Mumbai · Hindistan'],[-23.55,-46.63,'São Paulo · Brezilya'],[43.65,-79.38,'Toronto · Kanada'],[37.57,126.98,'Seul · G. Kore'],[41.01,28.98,'İstanbul · Türkiye'],[55.76,37.62,'Moskova · Rusya'],[24.71,46.68,'Riyad · S. Arabistan'],[52.37,4.90,'Amsterdam · Hollanda'],[41.88,-87.63,'Chicago · ABD']];
+var VERI_MINERAL=[[-24.27,-69.07,'Escondida bakır · Şili'],[-4.06,137.11,'Grasberg altın/bakır · Endonezya'],[41.53,64.57,'Muruntau altın · Özbekistan'],[43.01,106.85,'Oyu Tolgoi bakır · Moğolistan'],[-22.60,118.60,'Pilbara demir · Avustralya'],[-33.86,116.06,'Greenbushes lityum · Avustralya'],[-23.50,-68.30,'Atacama lityum · Şili'],[41.77,109.97,'Bayan Obo nadir toprak · Çin'],[35.48,-115.53,'Mountain Pass nadir toprak · ABD'],[69.35,88.20,'Norilsk nikel · Rusya'],[-10.72,25.47,'Kolwezi kobalt · DR Kongo'],[-26.42,27.42,'Mponeng altın · G. Afrika'],[-9.53,-77.05,'Antamina bakır · Peru'],[-6.30,155.50,'Bougainville bakır · PNG'],[67.15,32.40,'Kola Yarımadası · Rusya']];
+var VERI_CATISMA=[[48.50,37.80,'Ukrayna · Donbas'],[31.42,34.37,'Gazze / İsrail'],[15.50,32.56,'Sudan · Hartum'],[15.37,44.19,'Yemen · Sana'],[35.93,36.63,'Suriye · İdlib'],[21.88,95.98,'Myanmar · Sagaing'],[16.27,-0.04,'Sahel · Mali'],[-1.68,29.22,'DR Kongo · Goma'],[18.59,-72.31,'Haiti · Port-au-Prince'],[24.00,119.50,'Tayvan Boğazı']];
+var VERI_TICARET=[[[26.57,56.25],[25.00,57.00],[23.00,59.50],'Hürmüz Boğazı'],[[30.00,32.55],[31.50,32.30],[34.00,30.00],[37.00,25.00],'Süveyş Hattı'],[[9.00,-79.60],[9.30,-79.90],[9.60,-80.00],'Panama Kanalı'],[[1.30,103.50],[3.00,100.00],[5.50,96.00],[6.00,94.50],'Malakka Boğazı'],[[12.50,43.30],[13.50,42.00],[15.00,41.00],'Bab-el-Mendeb'],[[41.10,29.05],[40.90,28.95],[40.60,28.60],'İstanbul Boğazı'],[[36.00,-5.40],[35.95,-5.60],[35.90,-5.90],'Cebelitarık'],[[-34.50,18.30],[-36.00,20.00],[-38.00,25.00],'Ümit Burnu']];
+var KATMANLAR=[
+ ['deprem','Deprem','#facc15'],['yangin','Yangın/Sel/Fırtına','#ff5a1f'],['gdacs','GDACS Afet (canlı)','#ef4444'],
+ ['kasirga','Kasırga/Siklon','#a855f7'],['volkan','Volkanlar','#b45309'],['tsunami','Tsunami/Şiddetli Hava','#06b6d4'],
+ ['gemi','Gemiler (canlı)','#2dd4bf'],['ucak','Uçaklar (canlı)','#7dd3fc'],['askeriucak','Askerî Uçaklar (canlı)','#f87171'],['iss','ISS','#4ade80'],
+ ['uyduc','Uydular (canlı yörünge)','#c4b5fd'],['starlink','Starlink (canlı)','#93c5fd'],['aurora','Kutup Işıkları','#22d3ee'],
+ ['hava','Hava Durumu','#fde68a'],['yagis','Yağış Tahmini (24s)','#3b82f6'],['ruzgar','Rüzgâr','#bae6fd'],['havakalite','Hava Kalitesi PM2.5','#fca5a5'],
+ ['dalga','Dalga Yüksekliği','#60a5fa'],['termin','Gece/Gündüz Çizgisi','#e5e7eb'],
+ ['depremuyari','Deprem Uyarı Seviyesi (PAGER)','#f97316'],['meteor','Ateş Topu / Meteor','#fde68a'],
+ ['ucakyogunluk','Uçak Yoğunluğu','#60a5fa'],['gemiyogunluk','Gemi Yoğunluğu','#2dd4bf'],
+ ['auroracizgi','Aurora Görünürlük Çizgisi','#22d3ee'],['uzaycopu','Uzay Çöpü (enkaz)','#94a3b8'],
+ ['yakinlik','Gaziantep Yakınlık (1000 km)','#ff2d2d'],
+ ['emsc','EMSC Depremleri (Avrupa/Akdeniz)','#fcd34d'],['tarihsel','Tarihsel Depremler (1900+ M7)','#f59e0b'],['kotuip','Kötü Şöhretli IP (3 liste)','#fb7185'],
+ ['zamanmakinesi','Zaman Makinesi (30 gün arşivi)','#f0abfc'],['yorunge','Uydu Yörünge İzleri','#c4b5fd'],
+ ['ucakiz','Uçak İzleri','#38bdf8'],['gemiiz','Gemi İzleri','#2dd4bf'],
+ ['depremdalga','Deprem Dalga Animasyonu','#f97316'],['trhava','Türkiye Hava Sahası','#fbbf24'],
+ 'GRUP:SİBER KATMANLAR',
+ ['feodo','Botnet C2 Sunucuları','#f43f5e'],['ransom','Fidye Yazılımı Mağdurları','#dc2626'],
+ ['tor','Tor Röleleri','#a78bfa'],['saldiri','Siber Saldırı Kaynakları','#fb7185'],
+ 'GRUP:STATİK KATMANLAR',
+ ['catisma','Çatışma Bölgeleri','#ef4444'],['askeri','Askeri Üsler','#22c55e'],['nukleer','Nükleer Tesisler','#eab308'],
+ ['uzay','Uzay Üsleri','#a855f7'],['ekonomik','Ekonomik Merkezler','#38bdf8'],['mineral','Kritik Mineraller','#f97316'],
+ ['ticaret','Ticaret Rotaları','#06b6d4'],['rafineri','Petrol Rafinerileri','#f59e0b'],['boru','Boru Hatları','#fb923c'],
+ ['liman','Büyük Limanlar','#38bdf8'],['santral','Santral / Baraj','#84cc16'],['verimerkezi','Veri Merkezleri','#a78bfa'],
+ ['cipfab','Çip Fabrikaları','#f472b6'],['multeci','Mülteci Kampları','#fbbf24'],['koridor','Ulaşım Koridorları','#22d3ee'],
+ 'GRUP:TÜRKİYE / ENERJİ',
+ ['fay','Türkiye Fay Hatları','#ef4444'],['platform','Deniz Platformları','#f59e0b'],
+ ['gaz','Doğalgaz Sahaları','#38bdf8'],['havalimani','Büyük Havalimanları','#e2e8f0']
+];
+var KATMAN={};
+function katPanelOlustur(){
+  var h='<div class="yanBaslik">🗂️ KATMANLAR ('+KATMANLAR.filter(function(x){return typeof x!=='string';}).length+')</div>';
+  if(typeof MOD_SETLERI!=='undefined'){
+    h+='<div class="modSet">';
+    for(var s=0;s<MOD_SETLERI.length;s++){
+      h+='<button class="modSetBtn" style="color:'+MOD_SETLERI[s].renk+';border-color:'+MOD_SETLERI[s].renk+'" onclick="modSetiUygula('+s+')">'+esc(MOD_SETLERI[s].ad)+'</button>';
+    }
+    h+='</div>';
+  }
+  h+='<input id="katArama" class="katArama" placeholder="🔍 katman ara (ör. deprem, gemi, cve)" oninput="katmanAra(this.value)"><div id="katAramaBilgi" class="katAramaBilgi"></div>';
+  h+='<div class="katIzgara">';
+  for(var i=0;i<KATMANLAR.length;i++){
+    var k=KATMANLAR[i];
+    if(typeof k==='string'){ h+='<div class="katGrup">'+esc(k.replace('GRUP:',''))+'</div>'; continue; }
+    if(KATMAN[k[0]]===undefined) KATMAN[k[0]]=1;
+    var canliMi=false;
+    if(typeof ZAMAN_PLANI!=='undefined'){ for(var zp=0;zp<ZAMAN_PLANI.length;zp++){ if(ZAMAN_PLANI[zp].id===k[0]){ canliMi=true; break; } } }
+    var yas = canliMi ? '<span class="katYas" data-yas="'+k[0]+'">'+(typeof katmanYasi==='function'?katmanYasi(k[0]):'')+'</span>'
+                      +'<button class="katYenile" onclick="katmanYenile(\''+k[0]+'\',event)" title="bu katmanı yenile">↻</button>' : '';
+    h+='<label class="katSat"><input type="checkbox" '+(KATMAN[k[0]]?'checked':'')+' onchange="katDegis(\''+k[0]+'\',this.checked)">'
+      +'<span><i style="background:'+k[2]+'"></i>'+esc(k[1])+yas+'</span></label>';
+  }
+  h+='</div>';
+  if(typeof karoPanelHTML==='function') h+=karoPanelHTML();
+  var p=$('katPanel'); if(p) p.innerHTML=h;
+  if(typeof karolarKur==='function'){ setTimeout(karolarKur, 60); }
+}
+function katDegis(id,acik){
+  KATMAN[id]=acik?1:0;
+  if(typeof katmanDegisti==='function'){ katmanDegisti(id,acik); return; }
+  if(id==='ucak'){ if(acik){ ucusBaslat(); } else { if(UCUS_TICK){ clearInterval(UCUS_TICK); UCUS_TICK=null; } if(KURE) KURE.htmlElementsData([]); } }
+  kureCiz();
+}
+function statikNoktalar(){
+  var out=[];
+  function ekle(dizi,renk,tur,cap){ for(var i=0;i<dizi.length;i++){ out.push({lat:dizi[i][0],lng:dizi[i][1],renk:renk,cap:cap,yuk:0.012,tur:tur,ad:dizi[i][2]}); } }
+  ekle(VERI_ASKERI,'#22c55e','askeri',0.5);
+  ekle(VERI_NUKLEER,'#eab308','nukleer',0.5);
+  ekle(VERI_UZAY,'#a855f7','uzay',0.5);
+  ekle(VERI_EKONOMI,'#38bdf8','ekonomik',0.45);
+  ekle(VERI_MINERAL,'#f97316','mineral',0.45);
+  ekle(VERI_CATISMA,'#ef4444','catisma',0.6);
+  if(typeof statikListe==='function'){ var ek=statikListe(); for(var s=0;s<ek.length;s++) out.push(ek[s]); }
+  return out;
+}
+function kureCiz(){
+  if(!KURE) return;
+  var goster=[];
+  for(var i=0;i<KURE_VERI.length;i++){ if(KATMAN[KURE_VERI[i].tur]) goster.push(KURE_VERI[i]); }
+  if(typeof canliNoktalar==='function'){ var cn=canliNoktalar(); for(var c=0;c<cn.length;c++){ if(KATMAN[cn[c].tur]) goster.push(cn[c]); } }
+  KURE.pointsData(goster);
+  var yollar=[];
+  if(KATMAN.ticaret){ for(var j=0;j<VERI_TICARET.length;j++){ var r=VERI_TICARET[j], pts=[]; for(var k=0;k<r.length-1;k++) pts.push([r[k][0],r[k][1]]); yollar.push({pts:pts,ad:r[r.length-1],renk:'#06b6d4',tur:'ticaret'}); } }
+  if(typeof statikYollar==='function'){ var sy=statikYollar(); for(var s2=0;s2<sy.length;s2++){ if(KATMAN[sy[s2].tur]) yollar.push(sy[s2]); } }
+  if(typeof canliYollar==='function'){ var cy=canliYollar(); for(var c2=0;c2<cy.length;c2++){ if(KATMAN[cy[c2].tur]) yollar.push(cy[c2]); } }
+  KURE.pathsData(yollar).pathPointLat(function(p){return p[0];}).pathPointLng(function(p){return p[1];}).pathColor(function(y){return y.renk;}).pathStroke(1.2).pathDashLength(0.4).pathDashGap(0.1).pathDashAnimateTime(12000).pathTransitionDuration(0);
+}
+
+
+/* ===== ETİKETLER (Google Maps tarzı) — ülke / şehir / dağ ===== */
+var ETIKETLER=[];
+(function(){
+  var U=[['Türkiye',39.0,35.0],['Almanya',51.0,10.0],['Fransa',46.6,2.5],['Birleşik Krallık',54.0,-2.0],['İspanya',40.0,-4.0],['İtalya',42.5,12.5],['Yunanistan',39.0,22.0],['Rusya',60.0,90.0],['Ukrayna',49.0,32.0],['Polonya',52.0,19.0],['Hollanda',52.3,5.3],['Belçika',50.8,4.5],['İsveç',62.0,15.0],['Norveç',62.0,9.0],['Finlandiya',64.0,26.0],['Portekiz',39.5,-8.0],['İrlanda',53.0,-8.0],['Avusturya',47.5,14.5],['İsviçre',47.0,8.0],['Romanya',46.0,25.0],['Bulgaristan',43.0,25.0],['Macaristan',47.0,19.5],['Çekya',49.8,15.5],['Sırbistan',44.0,21.0],['Azerbaycan',40.3,47.9],['Gürcistan',42.3,43.4],['İran',32.0,53.0],['Irak',33.0,44.0],['Suriye',35.0,38.0],['Lübnan',33.8,35.8],['İsrail',31.5,34.9],['Suudi Arabistan',24.0,45.0],['Mısır',26.8,30.8],['Libya',27.0,17.0],['Cezayir',28.0,3.0],['Fas',32.0,-6.0],['Tunus',34.0,9.0],['Sudan',16.0,30.0],['Etiyopya',9.0,40.0],['Kenya',0.5,37.9],['Nijerya',9.1,8.7],['Güney Afrika',-29.0,24.0],['Çin',35.0,104.0],['Hindistan',22.0,79.0],['Japonya',36.2,138.2],['Güney Kore',36.5,127.9],['Endonezya',-2.5,118.0],['Pakistan',30.0,69.0],['Afganistan',33.9,67.7],['Kazakistan',48.0,67.0],['Özbekistan',41.4,64.6],['Tayland',15.0,101.0],['Vietnam',14.0,108.0],['Filipinler',12.9,121.8],['Malezya',4.2,101.9],['Avustralya',-25.0,134.0],['Yeni Zelanda',-41.0,174.0],['Kanada',60.0,-100.0],['ABD',39.8,-98.6],['Meksika',23.6,-102.5],['Brezilya',-10.0,-52.0],['Arjantin',-34.0,-64.0],['Şili',-33.0,-71.0],['Kolombiya',4.0,-72.0],['Peru',-10.0,-76.0],['Venezuela',7.0,-66.0],['Küba',21.5,-79.5]];
+  for(var i=0;i<U.length;i++) ETIKETLER.push({ad:U[i][0],lat:U[i][1],lng:U[i][2],renk:'#eaffea',boy:0.75,tur:'ulke'});
+  var S=[['İstanbul',41.01,28.98],['Ankara',39.93,32.86],['İzmir',38.42,27.14],['Londra',51.51,-0.13],['Paris',48.86,2.35],['Berlin',52.52,13.40],['Madrid',40.42,-3.70],['Roma',41.90,12.50],['Moskova',55.76,37.62],['Kiev',50.45,30.52],['New York',40.71,-74.01],['Los Angeles',34.05,-118.24],['Chicago',41.88,-87.63],['Toronto',43.65,-79.38],['Mexico City',19.43,-99.13],['São Paulo',-23.55,-46.63],['Buenos Aires',-34.60,-58.38],['Tokyo',35.68,139.69],['Pekin',39.90,116.40],['Şanghay',31.23,121.47],['Hong Kong',22.32,114.17],['Singapur',1.35,103.82],['Mumbai',19.08,72.88],['Delhi',28.61,77.21],['Dubai',25.20,55.27],['Riyad',24.71,46.68],['Kahire',30.04,31.24],['Lagos',6.52,3.38],['Nairobi',-1.29,36.82],['Johannesburg',-26.20,28.05],['Sydney',-33.87,151.21],['Melbourne',-37.81,144.96],['Jakarta',-6.21,106.85],['Seul',37.57,126.98],['Bangkok',13.76,100.50]];
+  for(var k=0;k<S.length;k++) ETIKETLER.push({ad:S[k][0],lat:S[k][1],lng:S[k][2],renk:'#bae6fd',boy:0.5,tur:'sehir'});
+  var D=[['Himalaya',28.0,84.0],['Everest',27.99,86.93],['And Dağları',-20.0,-68.0],['Alpler',46.5,9.5],['Kayalık Dağları',44.0,-110.0],['Ural Dağları',60.0,59.0],['Atlas Dağları',31.5,-6.5],['Ağrı Dağı',39.70,44.30],['Toroslar',37.0,33.0],['Kafkas Dağları',42.5,44.0]];
+  for(var m=0;m<D.length;m++) ETIKETLER.push({ad:D[m][0],lat:D[m][1],lng:D[m][2],renk:'#fca5a5',boy:0.45,tur:'dag'});
+})();
+
+/* ===== 3D KÜRE (globe.gl) ===== */
+var MOD='3d', KURE=null, KURE_YUK=false, ISS_KTICK=null, UCUS_TICK=null, KURE_VERI=[];
+var RENK_OLAY={'Wildfires':'#ff5a1f','Floods':'#3b82f6','Severe Storms':'#a855f7','Volcanoes':'#b45309','Drought':'#eab308','Landslides':'#9ca3af','Sea and Lake Ice':'#22d3ee','Snow':'#e0f2fe','Manmade':'#f43f5e','Temperature Extremes':'#fb923c','Dust and Haze':'#a3a3a3'};
+/* temanın ana rengini okur (küre atmosferi ve kimlik çerçevesi aynı rengi kullanır) */
+function temaRengi(){
+  try{ var v=getComputedStyle(document.body).getPropertyValue('--ana').trim(); return v||'#22c55e'; }catch(e){ return '#22c55e'; }
+}
+function atmosferGuncelle(){
+  if(!KURE || !KURE.showAtmosphere) return;
+  try{ KURE.atmosphereColor(temaRengi()); }catch(e){}
+}
+function modSec(m){
+  MOD=m;
+  if($('btn3d')) $('btn3d').className='modBtn'+(m==='3d'?' aktif':'');
+  if($('btn4d')) $('btn4d').className='modBtn'+(m==='4d'?' aktif':'');
+  if($('btn2d')) $('btn2d').className='modBtn'+(m==='2d'?' aktif':'');
+  if(m==='2d'){
+    if($('kure')) $('kure').style.display='none';
+    if($('harita')) $('harita').style.display='block';
+    if(KURE && KURE.controls) KURE.controls().autoRotate=false;
+    if(!HARITA){ haritaBaslat(); } else { setTimeout(function(){ if(HARITA) HARITA.invalidateSize(); },70); }
+    if(typeof karolarKur==='function'){ setTimeout(karolarKur, 500); }
+    if(typeof haritaKatmanlariCiz==='function'){ setTimeout(function(){ haritaKatmanlariCiz(true); }, 900); }
+    return;
+  }
+  if($('kure')) $('kure').style.display='block';
+  if($('harita')) $('harita').style.display='none';
+  kureBaslat();
+  if(!KURE) return;
+  if(m==='4d'){
+    KURE.showAtmosphere(true).atmosphereColor(temaRengi()).atmosphereAltitude(0.28);
+    KURE.controls().autoRotateSpeed=0.95;
+    KURE.htmlTransitionDuration(14000);
+    KURE.pointOfView({lat:20,lng:10,altitude:1.85}, 1800);
+  } else {
+    KURE.showAtmosphere(true).atmosphereColor(temaRengi()).atmosphereAltitude(0.16);
+    KURE.controls().autoRotateSpeed=0.5;
+    KURE.htmlTransitionDuration(9000);
+    KURE.pointOfView({lat:20,lng:10,altitude:2.4}, 1200);
+  }
+  if(KURE.controls) KURE.controls().autoRotate=true;
+}
+function kureBaslat(){
+  if(typeof Globe==='undefined'){ durum('harita','3D kütüphanesi (globe.gl) yüklenemedi — internet/CDN gerekli.'); return; }
+  var el=$('kure');
+  if(!KURE){
+    try{
+      KURE=Globe({rendererConfig:{preserveDrawingBuffer:true, antialias:true}})(el)
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+        .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+        .showAtmosphere(true).atmosphereColor(temaRengi()).atmosphereAltitude(0.16)
+        .pointOfView({lat:20,lng:10,altitude:2.4})
+        .pointsData([]).pointLat('lat').pointLng('lng').pointColor('renk').pointAltitude('yuk').pointRadius('cap').pointLabel('ad')
+        .arcsData([]).arcColor('renk').arcStroke(0.6).arcDashLength(0.4).arcDashGap(0.25).arcDashAnimateTime(5000).arcAltitudeAutoScale(0.4)
+        .onPointClick(function(p){ if(p && p.lat!=null){ KURE.pointOfView({lat:p.lat,lng:p.lng,altitude:1.5}, 900); if(typeof noktaKartAc==='function') setTimeout(function(){ noktaKartAc(p.lat,p.lng); }, 950); } });
+      KURE.width(el.clientWidth).height(el.clientHeight);
+      KURE.controls().autoRotate=true; KURE.controls().autoRotateSpeed=0.55;
+    }catch(e){ durum('harita','3D küre başlatılamadı (WebGL yok): '+e.message); return; }
+  } else {
+    setTimeout(function(){ KURE.width(el.clientWidth).height(el.clientHeight); if(KURE.controls) KURE.controls().autoRotate=true; },70);
+  }
+  if(!KURE_YUK){ KURE_YUK=true; kureVeriYukle(); kureIssBaslat(); ucusBaslat(); }
+  if(typeof htmlYenile==='function'){ setTimeout(htmlYenile, 500); }
+}
+function kureVeriYukle(){
+  durum('harita','Küre verisi çekiliyor…');
+  KURE_VERI=statikNoktalar();
+  fetchJSON('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=300',30000).then(function(d){
+    if(d&&d.events){ for(var i=0;i<d.events.length;i++){
+      var e=d.events[i]; if(!e.geometry||!e.geometry.length) continue;
+      var g=e.geometry[0], kt=(e.categories&&e.categories[0])?e.categories[0].title:'';
+      var lat=null,lng=null;
+      if(g.type==='Point'){ lng=g.coordinates[0]; lat=g.coordinates[1]; }
+      else if(g.type==='Polygon'&&g.coordinates&&g.coordinates[0]&&g.coordinates[0][0]){ lng=g.coordinates[0][0][0]; lat=g.coordinates[0][0][1]; }
+      if(lat==null) continue;
+      KURE_VERI.push({lat:lat,lng:lng,renk:RENK_OLAY[kt]||'#4ade80',cap:0.45,yuk:0.012,tur:'yangin',ad:e.title+' · '+kt});
+    }}
+    return null;
+  }).catch(function(){}).then(function(){
+    return fetchJSON('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=4.5&orderby=time&limit=300',25000).then(function(d){
+      if(d&&d.features){ for(var j=0;j<d.features.length;j++){ var f=d.features[j],p=f.geometry.coordinates,m=f.properties.mag;
+        KURE_VERI.push({lat:p[1],lng:p[0],renk:(m>=6?'#ff3b3b':(m>=5?'#ff8c1a':'#facc15')),cap:(m>=6?0.7:(m>=5?0.55:0.4)),yuk:0.015,tur:'deprem',ad:'M '+m+' · '+(f.properties.place||'')});
+      }}
+      return null;
+    }).catch(function(){});
+  }).then(function(){
+    kureCiz();
+    durum('harita','✔ '+KURE_VERI.length+' olay · '+Object.keys(KATMAN).filter(function(k){return KATMAN[k];}).length+' katman aktif');
+  });
+}
+function kureIssBaslat(){
+  if(ISS_KTICK) return;
+  function tik(){
+    fetchJSON('https://api.wheretheiss.at/v1/satellites/25544',15000).then(function(d){
+      if(!KURE) return;
+      var list=KURE.pointsData().filter(function(x){ return x.tur!=='iss'; });
+      list.push({lat:d.latitude,lng:d.longitude,renk:'#4ade80',cap:0.9,yuk:0.02,tur:'iss',ad:'ISS · '+Number(d.altitude).toFixed(0)+' km · '+Number(d.velocity).toFixed(0)+' km/sa'});
+      if(KATMAN.iss) KURE.pointsData(list);
+    }).catch(function(){});
+  }
+  tik(); ISS_KTICK=setInterval(tik,8000);
+}
+var UCUS_HARITA={};
+function ucusBaslat(){
+  if(UCUS_TICK){ clearInterval(UCUS_TICK); UCUS_TICK=null; }
+  function tik(){
+    if(!KATMAN.ucak){ return; }
+    fetchJSON('https://opensky-network.org/api/states/all', 25000).then(function(d){
+      if(!KURE||!d||!d.states) return;
+      var yeni=[], n=0;
+      for(var i=0;i<d.states.length;i++){ var st=d.states[i]; if(st[5]==null||st[6]==null) continue;
+        var id=st[0]||('x'+i);
+        var e=UCUS_HARITA[id];
+        if(!e){ var span=document.createElement('span'); span.className='ucakIkon'; span.textContent='✈'; span.style.display='inline-block'; e={el:span}; UCUS_HARITA[id]=e; }
+        e.lat=st[6]; e.lng=st[5]; e.ad=(st[1]?String(st[1]).trim():'uçak')+' · '+String(st[2]||'');
+        e.el.style.transform='rotate('+(st[10]||0)+'deg)';
+        yeni.push(e); n++; if(n>=180) break;
+      }
+      if(window.HTML_VERI){ HTML_VERI.ucak=yeni; htmlYenile(); }
+      else { KURE.htmlElementsData(yeni).htmlElement(function(x){ return x.el; }).htmlAltitude(0.012).htmlTransitionDuration(MOD==='4d'?14000:9000); }
+      durum('harita','✔ '+n+' uçak canlı (uçuyor) · dönen küre');
+    }).catch(function(e){ durum('harita','Uçaklar için paneli "USTAD-MONITOR-UCAKLI.bat" ile aç. ('+e.message+')'); });
+  }
+  tik(); UCUS_TICK=setInterval(tik,15000);
+}
+function yanHaberCek(mod){
+  mod = mod || 'dunya';
+  var kaynaklar = {
+    dunya:[['BBC','https://feeds.bbci.co.uk/news/world/rss.xml'],['Al Jazeera','https://www.aljazeera.com/xml/rss/all.xml'],['DW','https://rss.dw.com/rdf/rss-en-world'],['Guardian','https://www.theguardian.com/world/rss']],
+    turkiye:[['TRT Haber','https://www.trthaber.com/sondakika.rss'],['Anadolu Ajansı','https://www.aa.com.tr/tr/rss/default?cat=guncel'],['BBC Türkçe','https://feeds.bbci.co.uk/turkce/rss.xml'],['DW Türkçe','https://rss.dw.com/rdf/rss-tur-all'],['Sözcü','https://www.sozcu.com.tr/rss.xml']],
+    nasa:[['NASA APOD','https://www.nasa.gov/rss/dyn/breaking_news.rss'],['ScienceDaily Uzay','https://www.sciencedaily.com/rss/top/science.xml'],['Space.com','https://www.space.com/feeds/all']]
+  };
+  var sec = kaynaklar[mod] || kaynaklar.dunya;
+  var btns = {'dunya':'ntDunya','turkiye':'ntTurkiye','nasa':'ntNasa'};
+  for(var b in btns){ if($(btns[b])) $(btns[b]).className = (b===mod?'aktif':''); }
+  if($('yanHaberler')) $('yanHaberler').innerHTML='<div class="soluk" style="padding:8px">yükleniyor…</div>';
+  var vaatler=sec.map(function(kk){ return fetchJSON('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(kk[1]),20000).then(function(d){ return {k:kk[0],d:d}; }).catch(function(){ return {k:kk[0],d:null}; }); });
+  Promise.all(vaatler).then(function(rs){
+    var items=[];
+    for(var i=0;i<rs.length;i++){ if(rs[i].d&&rs[i].d.items){ for(var j=0;j<rs[i].d.items.length;j++){ var it=rs[i].d.items[j]; items.push({k:rs[i].k,t:it.title||'',u:it.link||'',z:it.pubDate||''}); } } }
+    items.sort(function(a,b){ return (Date.parse(b.z)||0)-(Date.parse(a.z)||0); });
+    var html='';
+    for(var m=0;m<Math.min(items.length,45);m++){ var h=items[m]; html+='<a class="yanHaber" target="_blank" rel="noopener" href="'+esc(h.u)+'"><div class="yhKaynak">'+esc(h.k)+'</div><div class="yhBaslik">'+esc(h.t)+'</div></a>'; }
+    if($('yanHaberler')) $('yanHaberler').innerHTML = html || '<div class="soluk" style="padding:8px">haber alınamadı</div>';
+  });
+}
+
+/* ===== MATRIX YAĞMURU (tam donanımlı hacker paneli efekti) ===== */
+var MATRIS_AC=false, MATRIS_TICK=null, MATRIS_CTX=null, MATRIS_KUTU={w:0,h:0}, MATRIS_DUSUS=[], MATRIS_ELLE=false;
+var MATRIS_HARF='01ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ#$%&@+=*<>/\\'.split('');
+function matrisKur(){
+  var c=$('matris'); if(!c || !c.getContext) return;
+  MATRIS_CTX=c.getContext('2d');
+  function boyut(){
+    c.width=window.innerWidth; c.height=window.innerHeight;
+    MATRIS_KUTU={w:c.width, h:c.height};
+    var kolon=Math.max(8, Math.floor(c.width/16));
+    MATRIS_DUSUS=[];
+    for(var i=0;i<kolon;i++) MATRIS_DUSUS.push(Math.floor(Math.random()*-60));
+  }
+  boyut();
+  window.addEventListener('resize', boyut);
+  if(MATRIS_TICK) clearInterval(MATRIS_TICK);
+  MATRIS_TICK=setInterval(matrisCiz, 70);
+}
+function matrisCiz(){
+  if(!MATRIS_CTX || !MATRIS_AC || document.hidden) return;
+  var ctx=MATRIS_CTX, w=MATRIS_KUTU.w, h=MATRIS_KUTU.h;
+  ctx.fillStyle='rgba(0,0,0,0.09)'; ctx.fillRect(0,0,w,h);
+  ctx.font='14px monospace';
+  var renk=temaRengi();
+  for(var i=0;i<MATRIS_DUSUS.length;i++){
+    var y=MATRIS_DUSUS[i]*14;
+    if(y>0 && y<h+14){
+      var t=MATRIS_HARF[Math.floor(Math.random()*MATRIS_HARF.length)];
+      ctx.fillStyle=(Math.random()>0.92)? '#ffffff' : renk;
+      ctx.fillText(t, i*16, y);
+    }
+    MATRIS_DUSUS[i]=MATRIS_DUSUS[i]+1;
+    if(y>h && Math.random()>0.972) MATRIS_DUSUS[i]=Math.floor(Math.random()*-20);
+  }
+}
+function matrisAcKapat(ac){
+  if(typeof ac==='undefined'){ MATRIS_ELLE=true; ac=!MATRIS_AC; }
+  MATRIS_AC=!!ac;
+  document.body.classList.toggle('yagmur', MATRIS_AC);
+  var b=$('yagmurBtn'); if(b){ b.className='renkBtn yagmurBtn'+(MATRIS_AC?' yagmurAcik':''); }
+  if(!MATRIS_AC && MATRIS_CTX){ try{ MATRIS_CTX.clearRect(0,0,MATRIS_KUTU.w,MATRIS_KUTU.h); }catch(e){} }
+  try{ localStorage.setItem('ustad_matris', MATRIS_AC?'1':'0'); }catch(e){}
+}
+/* ===== renk + baslat ===== */
+function renkUygula(r){
+  document.body.setAttribute('data-renk', r);
+  var b=document.querySelectorAll('.renkBtn');
+  for(var i=0;i<b.length;i++){ b[i].className='renkBtn'+(b[i].getAttribute('data-r')===r?' aktif':''); }
+  /* CRT efekti: hacker/matrix/amber/terminal/matbaa */
+  var crt=(r==='hacker'||r==='matrix'||r==='amber'||r==='terminal'||r==='matbaa');
+  document.body.classList.toggle('crt', crt);
+  /* matrix yağmuru: MATRIX ve HACKER temasında otomatik */
+  if(r==='matrix'||r==='hacker'){ MATRIS_ELLE=false; matrisAcKapat(true); }
+  else if(!MATRIS_ELLE){ matrisAcKapat(false); }
+  try{ localStorage.setItem('ustad_monitor_renk', r); }catch(e){}
+  setTimeout(function(){ if(typeof atmosferGuncelle==='function') atmosferGuncelle(); }, 30);
+}
+(function baslat(){
+  if(typeof matrisKur==='function') matrisKur();
+  var btnler=document.querySelectorAll('.renkBtn');
+  for(var i=0;i<btnler.length;i++){ if(btnler[i].getAttribute('data-r')) btnler[i].onclick=function(){ renkUygula(this.getAttribute('data-r')); }; }
+  var kayitli='monitor'; try{ kayitli=localStorage.getItem('ustad_monitor_renk')||'monitor'; }catch(e){}
+  var yagmurKayit=null; try{ yagmurKayit=localStorage.getItem('ustad_matris'); }catch(e){}
+  if(yagmurKayit==='1'){ MATRIS_ELLE=true; matrisAcKapat(true); }
+  renkUygula(kayitli);
+  git('harita');
+  if(typeof canliHepsiBaslat==='function'){ setTimeout(canliHepsiBaslat, 2500); }
+})();
+</script>
+<script src="katmanlar.js"></script>
+<script src="katman3.js"></script>
+<script src="siber.js"></script>
+<script src="katman2.js"></script>
+<script src="katman4.js"></script>
+<script src="kaynak2.js"></script>
+<script src="zeka2.js"></script>
+<script src="guvenlik.js"></script>
+<script src="disari.js"></script>
+<script src="gorsel2.js"></script>
+<script src="ustadtv.js"></script>
+<script src="piyasa-kutu.js"></script>
+<script src="radyo-kutu.js"></script>
+<script src="iptv.js"></script>
+<script src="iptv-kasa.js"></script>
+<script src="kasa.js?v=5"></script>
+<script src="panel-zeka.js"></script>
+<script src="analiz.js"></script>
+<script src="komuta.js"></script>
+<script src="kisisel.js"></script>
+</body>
+</html>
