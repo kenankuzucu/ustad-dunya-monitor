@@ -4,6 +4,8 @@
 > IPTV kanal merkezi, deprem/yangın/uydu/uzay/afet takibi ve **şifreli kasalar**.
 > Tek klasörde çalışır, kendi bilgisayarında açılır.
 
+![ÜSTAD DÜNYA MONİTÖRÜ — ana panel (canlı küre, piyasa, TV ve katmanlar)](ekran/00-ana-panel.png)
+
 Kenan Kuzucu · Gaziantep
 
 ---
